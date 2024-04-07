@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#000000</color>
+    <color name="boardColor">#CCBC3A</color>
+    <color name="white">#FFFFFF</color>
+    <color name="colorPositionAvailable">#008000</color>
+    <color name="colorSelected">#FFE500</color>
+    <color name="transparent_green">#8044FF2A</color>
+
+
+</resources>

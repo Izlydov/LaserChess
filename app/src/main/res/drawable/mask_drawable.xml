@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#00FFFFFF" /> <!-- Прозрачный цвет -->
+    <size android:width="50dp" /> <!-- Ширина правой части, которую вы хотите обрезать -->
+</shape>
