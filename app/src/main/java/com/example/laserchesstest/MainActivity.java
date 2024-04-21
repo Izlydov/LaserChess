@@ -36,11 +36,11 @@ public class MainActivity extends AppCompatActivity {
     public Position[][] Board = new Position[8][10];
     public Position[][] Board2 = new Position[8][10];
     public Boolean AnythingSelected = false;
-    public Boolean isAttackStarted;
     boolean DoubleMirrorSelected = false;
     public Coordinates lastPos = null;
     public Coordinates clickedPosition = new Coordinates(0, 0);
     public Coordinates blueLaserCords = new Coordinates(6, 9);
+    public Coordinates redLaserCords = new Coordinates(0, 0);
     public TextView game_over;
     public TextView[][] DisplayBoard = new TextView[8][10];
     public TextView[][] DisplayBoardBackground = new TextView[8][10];
@@ -826,7 +826,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             } else { // если фигура есть на clickedPosition
                 if (Board[clickedPosition.getX()][clickedPosition.getY()].getPiece().isWhite() != FirstPlayerTurn) { // если она ne соответствует ходу
-                    return; // последние изменения
+                     // последние изменения
                 }else { // смотрим какие ходы разрешены
                     listOfCoordinates.clear();
                     listOfCoordinates = Board[clickedPosition.getX()][clickedPosition.getY()].getPiece().AllowedMoves(clickedPosition, Board);
@@ -858,6 +858,7 @@ public class MainActivity extends AppCompatActivity {
                     resetColorAtAllowedPosition(listOfCoordinates);
                     AnythingSelected = false;
                     DoubleMirrorSelected = false;
+
                 }
 
             } else { // если 2 клик куда мы кликнули есть фигура то выбираем ее и это теперь 1 клик
@@ -866,11 +867,11 @@ public class MainActivity extends AppCompatActivity {
 
                     Piece p = Board[clickedPosition.getX()][clickedPosition.getY()].getPiece();
 
-                    if (DoubleMirrorSelected && (p instanceof Mirror || p instanceof Defender)){
-                        if(moveIsAllowed(listOfCoordinates, clickedPosition)){
+                    if(moveIsAllowed(listOfCoordinates, clickedPosition)) {
+                        if (DoubleMirrorSelected && (p instanceof Mirror || p instanceof Defender)){
                             Board[clickedPosition.getX()][clickedPosition.getY()].setPiece(Board[lastPos.getX()][lastPos.getY()].getPiece()); // ставит фигуру на прошлой позиции на clickedPosition
                             Board[lastPos.getX()][lastPos.getY()].setPiece(p); // меняет фигуру на прошлой позиции
-                            laserAttack(FirstPlayerTurn, wLaser.getDirection(), blueLaserCords);
+                            laserAttack(wLaser.getDirection(), blueLaserCords);
                             FirstPlayerTurn = !FirstPlayerTurn;// ход другому игроку
                             resetColorAtAllowedPosition(listOfCoordinates);
                             DisplayBoard[lastPos.getX()][lastPos.getY()].setBackgroundResource(0);
@@ -880,18 +881,18 @@ public class MainActivity extends AppCompatActivity {
                         }
                     } else {
                         AnythingSelected = false;
-                        return;
+                        DoubleMirrorSelected = false;
                     }
                 } else {
 
                     resetColorAtLastPosition(lastPos);
                     resetColorAtAllowedPosition(listOfCoordinates);
-
                     listOfCoordinates.clear();
                     listOfCoordinates = Board[clickedPosition.getX()][clickedPosition.getY()].getPiece().AllowedMoves(clickedPosition, Board);
-                DisplayBoardBackground[clickedPosition.getX()][clickedPosition.getY()].setBackgroundResource(R.color.colorSelected);
-                setColorAtAllowedPosition(listOfCoordinates);
+                    DisplayBoardBackground[clickedPosition.getX()][clickedPosition.getY()].setBackgroundResource(R.color.colorSelected);
+                    setColorAtAllowedPosition(listOfCoordinates);
                     AnythingSelected = true;
+                    DoubleMirrorSelected = false;
                 }
             }
         }
@@ -924,7 +925,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void rotatePieceRight(Piece p){
-        if (p != null && Board[clickedPosition.getX()][clickedPosition.getY()].getPiece().isWhite() == FirstPlayerTurn) {
+        if (p != null && p.isWhite() == FirstPlayerTurn) {
             p.setDirection(p.getDirection() + 90);
             if (p.getDirection() == 360){
                 p.setDirection(0);
@@ -938,7 +939,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void rotatePieceLeft(Piece p){
-        if (p != null && Board[clickedPosition.getX()][clickedPosition.getY()].getPiece().isWhite() == FirstPlayerTurn) {
+        if (p != null && p.isWhite() == FirstPlayerTurn) {
             p.setDirection(p.getDirection() - 90);
             if (p.getDirection() == 360){
                 p.setDirection(0);
@@ -1023,11 +1024,7 @@ public class MainActivity extends AppCompatActivity {
         coordinates = new Coordinates(x, y);
         return coordinates;
     }
-    private void laserAttack(Boolean FirstPlayerTurn, int laserDirection, Coordinates coordinates) {
-//        if (!isAttackStarted){
-//            isAttackStarted = !isAttackStarted;
-//            coordinates = updateXY(laserDirection, coordinates);
-//        }
+    private void laserAttack(int laserDirection, Coordinates coordinates) {
 
         if (coordinates.getX() > 7 || coordinates.getY() > 9 || coordinates.getX() < 0 || coordinates.getY() < 0){
             return;
@@ -1035,11 +1032,6 @@ public class MainActivity extends AppCompatActivity {
         String check;
         check = "" + coordinates.getX() + " " + coordinates.getY();
         Log.w("Check", check);
-//        if (FirstPlayerTurn) {
-//            startX = 7;
-//            startY = 9;
-//            laserDirection = Board[startX][startY].getPiece().getDirection();
-//        }
 
         switch (checkCell(coordinates, laserDirection)) {
             case STOP:
@@ -1053,25 +1045,25 @@ public class MainActivity extends AppCompatActivity {
                 laserDirection = 270;
                 Log.w("Switch", "RotatedtoLeft");
                 coordinates = updateXY(laserDirection, coordinates);
-                laserAttack(FirstPlayerTurn, laserDirection, coordinates);
+                laserAttack(laserDirection, coordinates);
                 break;
             case RIGHT:
                 laserDirection = 90;
                 Log.w("Switch", "RotatedtoRight");
                 coordinates = updateXY(laserDirection, coordinates);
-                laserAttack(FirstPlayerTurn, laserDirection, coordinates);
+                laserAttack(laserDirection, coordinates);
                 break;
             case TOP:
                 laserDirection = 0;
                 Log.w("Switch", "RotatedtoTop");
                 coordinates = updateXY(laserDirection, coordinates);
-                laserAttack(FirstPlayerTurn, laserDirection, coordinates);
+                laserAttack(laserDirection, coordinates);
                 break;
             case BOTTOM:
                 laserDirection = 180;
                 Log.w("Switch", "RotatedtoBottom");
                 coordinates = updateXY(laserDirection, coordinates);
-                laserAttack(FirstPlayerTurn, laserDirection, coordinates);
+                laserAttack(laserDirection, coordinates);
                 break;
 
             case KING_KILL:
@@ -1084,7 +1076,7 @@ public class MainActivity extends AppCompatActivity {
             case NOTHING:
                 Log.w("Switch", "Nothing");
                 coordinates = updateXY(laserDirection, coordinates);
-                laserAttack(FirstPlayerTurn, laserDirection, coordinates);
+                laserAttack(laserDirection, coordinates);
                 break;
             case NULL:
                 Log.w("Switch", "Got Null");
