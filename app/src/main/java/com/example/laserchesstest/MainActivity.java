@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     public ArrayList<Coordinates> listOfCoordinates = new ArrayList<>();
     public Position[][] Board = new Position[8][10];
     public Position[][] Board2 = new Position[8][10];
+    public Position[][] Board3 = new Position[8][10];
     public Boolean AnythingSelected = false;
     boolean DoubleMirrorSelected = false;
     public Coordinates lastPos = null;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     public TextView[][] DisplayBoard = new TextView[8][10];
     public TextView[][] DisplayBoardBackground = new TextView[8][10];
     public ArrayList<Position[][]> LastMoves = new ArrayList<>();
+    public ArrayList<CellResult> LaserWay = new ArrayList<>();
     public int numberOfMoves;
 
 
@@ -153,7 +155,6 @@ public class MainActivity extends AppCompatActivity {
         Board[7][3].setPiece(wDefender1);
         Board[7][4].setPiece(wKing);
         Board[7][5].setPiece(wDefender2);
-
 
 
         DisplayBoard[0][0] = (TextView) findViewById(R.id.R00);
@@ -365,9 +366,9 @@ public class MainActivity extends AppCompatActivity {
 //        for (int g = 0; g < 8; g++) {
 //            for (int h = 0; h < 10; h++) {
 //                if (Board[g][h].getPiece() == null) {
-//                    Board2[g][h].setPiece(null);
+//                    Board3[g][h].setPiece(null);
 //                } else {
-//                    Board2[g][h].setPiece(Board[g][h].getPiece());
+//                    Board3[g][h].setPiece(Board[g][h].getPiece());
 //                }
 //            }
 //        }
@@ -799,9 +800,6 @@ public class MainActivity extends AppCompatActivity {
         } else if (viewId == R.id.R78) {
             clickedPosition.setX(7);
             clickedPosition.setY(8);
-//            boolean b = Board2[7][9].getPiece() instanceof Laser;
-//            String stringValue = String.valueOf(b);
-//            Log.w("test", stringValue);
         } else if (viewId == R.id.R79) {
             clickedPosition.setX(7);
             clickedPosition.setY(9);
@@ -809,13 +807,21 @@ public class MainActivity extends AppCompatActivity {
         } else if (viewId == R.id.rotate_left) {
             rotatePieceLeft(Board[clickedPosition.getX()][clickedPosition.getY()].getPiece());
             Log.w("myAppLeft", "rotated");
+            saveBoard();
             resetColorAtAllowedPosition(listOfCoordinates);
             setBoard();
             return;
-        }else if (viewId == R.id.rotate_right) {
+        } else if (viewId == R.id.rotate_right) {
             rotatePieceRight(Board[clickedPosition.getX()][clickedPosition.getY()].getPiece());
             resetColorAtAllowedPosition(listOfCoordinates);
             Log.w("myAppRight", "rotated");
+            saveBoard();
+            setBoard();
+            return;
+        } else if (viewId == R.id.undo) {
+            undo(v);
+            resetColorAtAllowedPosition(listOfCoordinates);
+            Log.w("myAppRight", "undo");
             setBoard();
             return;
         }
@@ -826,8 +832,8 @@ public class MainActivity extends AppCompatActivity {
                 return;
             } else { // если фигура есть на clickedPosition
                 if (Board[clickedPosition.getX()][clickedPosition.getY()].getPiece().isWhite() != FirstPlayerTurn) { // если она ne соответствует ходу
-                     // последние изменения
-                }else { // смотрим какие ходы разрешены
+                    // последние изменения
+                } else { // смотрим какие ходы разрешены
                     listOfCoordinates.clear();
                     listOfCoordinates = Board[clickedPosition.getX()][clickedPosition.getY()].getPiece().AllowedMoves(clickedPosition, Board);
                     DisplayBoardBackground[clickedPosition.getX()][clickedPosition.getY()].setBackgroundResource(R.color.colorSelected);
@@ -843,7 +849,7 @@ public class MainActivity extends AppCompatActivity {
             if (Board[clickedPosition.getX()][clickedPosition.getY()].getPiece() == null) {  // если куда мы ходим нет фигуры
                 if (moveIsAllowed(listOfCoordinates, clickedPosition)) { // если ход разрешен
 
-//                    saveBoard();
+                    saveBoard();
                     Board[clickedPosition.getX()][clickedPosition.getY()].setPiece(Board[lastPos.getX()][lastPos.getY()].getPiece()); // ставит фигуру на прошлой позиции на clickedPosition
                     Board[lastPos.getX()][lastPos.getY()].setPiece(null); // убирает фигуру на прошлой позиции
                     FirstPlayerTurn = !FirstPlayerTurn;// ход другому игроку
@@ -863,12 +869,13 @@ public class MainActivity extends AppCompatActivity {
 
             } else { // если 2 клик куда мы кликнули есть фигура то выбираем ее и это теперь 1 клик
                 resetColorAtAllowedPosition(listOfCoordinates);
-                if (Board[clickedPosition.getX()][clickedPosition.getY()].getPiece().isWhite() != Board[lastPos.getX()][lastPos.getY()].getPiece().isWhite()){
+                if (Board[clickedPosition.getX()][clickedPosition.getY()].getPiece().isWhite() != Board[lastPos.getX()][lastPos.getY()].getPiece().isWhite()) {
 
                     Piece p = Board[clickedPosition.getX()][clickedPosition.getY()].getPiece();
 
-                    if(moveIsAllowed(listOfCoordinates, clickedPosition)) {
-                        if (DoubleMirrorSelected && (p instanceof Mirror || p instanceof Defender)){
+                    if (moveIsAllowed(listOfCoordinates, clickedPosition)) {
+                        if (DoubleMirrorSelected && (p instanceof Mirror || p instanceof Defender)) {
+                            saveBoard();
                             Board[clickedPosition.getX()][clickedPosition.getY()].setPiece(Board[lastPos.getX()][lastPos.getY()].getPiece()); // ставит фигуру на прошлой позиции на clickedPosition
                             Board[lastPos.getX()][lastPos.getY()].setPiece(p); // меняет фигуру на прошлой позиции
                             laserAttack(wLaser.getDirection(), blueLaserCords);
@@ -901,36 +908,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void resetColorAtAllowedPosition(ArrayList<Coordinates> listOfCoordinates) {
-        for(int i=0; i<listOfCoordinates.size(); i++){
-            if (Board2[listOfCoordinates.get(i).getX()][listOfCoordinates.get(i).getY()].getPiece() == null){
+        for (int i = 0; i < listOfCoordinates.size(); i++) {
+            if (Board2[listOfCoordinates.get(i).getX()][listOfCoordinates.get(i).getY()].getPiece() == null) {
                 DisplayBoardBackground[listOfCoordinates.get(i).getX()][listOfCoordinates.get(i).getY()].setBackgroundResource(0);
-            }
-            else if(Board2[listOfCoordinates.get(i).getX()][listOfCoordinates.get(i).getY()].getPiece().isWhite()){
+            } else if (Board2[listOfCoordinates.get(i).getX()][listOfCoordinates.get(i).getY()].getPiece().isWhite()) {
                 DisplayBoardBackground[listOfCoordinates.get(i).getX()][listOfCoordinates.get(i).getY()].setBackgroundResource(R.drawable.blue_reserved_cell);
-            }
-            else {
+            } else {
                 DisplayBoardBackground[listOfCoordinates.get(i).getX()][listOfCoordinates.get(i).getY()].setBackgroundResource(R.drawable.red_reserved_cell);
             }
-            }
         }
-    void setColorAtAllowedPosition(ArrayList<Coordinates> list){
+    }
 
-        for(int i=0; i<list.size(); i++){
-            if(Board[list.get(i).getX()][list.get(i).getY()].getPiece() == null){
-                if(Board[list.get(i).getX()][list.get(i).getY()].getPiece() == null) {
+    void setColorAtAllowedPosition(ArrayList<Coordinates> list) {
+
+        for (int i = 0; i < list.size(); i++) {
+            if (Board[list.get(i).getX()][list.get(i).getY()].getPiece() == null) {
+                if (Board[list.get(i).getX()][list.get(i).getY()].getPiece() == null) {
                     DisplayBoardBackground[list.get(i).getX()][list.get(i).getY()].setBackgroundResource(R.color.transparent_green);
                 }
             }
         }
     }
 
-    private void rotatePieceRight(Piece p){
+    private void rotatePieceRight(Piece p) {
         if (p != null && p.isWhite() == FirstPlayerTurn) {
             p.setDirection(p.getDirection() + 90);
-            if (p.getDirection() == 360){
+            if (p.getDirection() == 360) {
                 p.setDirection(0);
             }
-            if (p.getDirection() < 0){
+            if (p.getDirection() < 0) {
                 p.setDirection(360 + p.getDirection());
             }
             AnythingSelected = false;
@@ -938,13 +944,14 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-    private void rotatePieceLeft(Piece p){
+
+    private void rotatePieceLeft(Piece p) {
         if (p != null && p.isWhite() == FirstPlayerTurn) {
             p.setDirection(p.getDirection() - 90);
-            if (p.getDirection() == 360){
+            if (p.getDirection() == 360) {
                 p.setDirection(0);
             }
-            if (p.getDirection() < 0){
+            if (p.getDirection() < 0) {
                 p.setDirection(360 + p.getDirection());
             }
             AnythingSelected = false;
@@ -952,35 +959,35 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void saveBoard(){
+    public void saveBoard() {
         numberOfMoves++;
-        LastMoves.add(numberOfMoves-1 ,Board2 );
+        LastMoves.add(numberOfMoves - 1, Board3);
 
         for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                LastMoves.get(numberOfMoves-1)[i][j] = new Position(null);
+            for (int j = 0; j < 10; j++) {
+                LastMoves.get(numberOfMoves - 1)[i][j] = new Position(null);
             }
         }
 
-        for(int g=0;g<8;g++){
-            for(int h=0;h<8;h++){
-                if(Board[g][h].getPiece()==null){
-                    LastMoves.get(numberOfMoves-1)[g][h].setPiece(null);
-                }else{
-                    LastMoves.get(numberOfMoves-1)[g][h].setPiece(Board[g][h].getPiece());
+        for (int g = 0; g < 8; g++) {
+            for (int h = 0; h < 10; h++) {
+                if (Board[g][h].getPiece() == null) {
+                    LastMoves.get(numberOfMoves - 1)[g][h].setPiece(null);
+                } else {
+                    LastMoves.get(numberOfMoves - 1)[g][h].setPiece(Board[g][h].getPiece());
                 }
             }
         }
     }
 
     private boolean moveIsAllowed(ArrayList<Coordinates> allowedMoves, Coordinates clickedPosition) {
-        Boolean Allowed = false;
-        for(int i = 0;i < allowedMoves.size();i++){
-            if(allowedMoves.get(i).getX() == clickedPosition.getX()  &&  allowedMoves.get(i).getY() == clickedPosition.getY()){
-                if(!(Board2[clickedPosition.getX()][clickedPosition.getY()].getPiece() instanceof ReservedCell)) {
+        boolean Allowed = false;
+        for (int i = 0; i < allowedMoves.size(); i++) {
+            if (allowedMoves.get(i).getX() == clickedPosition.getX() && allowedMoves.get(i).getY() == clickedPosition.getY()) {
+                if (!(Board2[clickedPosition.getX()][clickedPosition.getY()].getPiece() instanceof ReservedCell)) {
                     Allowed = true;
                     break;
-                } else if(Board2[clickedPosition.getX()][clickedPosition.getY()].getPiece().isWhite() == FirstPlayerTurn){
+                } else if (Board2[clickedPosition.getX()][clickedPosition.getY()].getPiece().isWhite() == FirstPlayerTurn) {
                     Allowed = true;
                     break;
                 }
@@ -989,25 +996,45 @@ public class MainActivity extends AppCompatActivity {
         return Allowed;
     }
 
-    private void resetColorAtLastPosition(Coordinates lastPos){
-        if (Board2[lastPos.getX()][lastPos.getY()].getPiece() == null){
-        DisplayBoardBackground[lastPos.getX()][lastPos.getY()].setBackgroundResource(0);
-    }
-        else if(Board2[lastPos.getX()][lastPos.getY()].getPiece().isWhite()){
+    private void resetColorAtLastPosition(Coordinates lastPos) {
+        if (Board2[lastPos.getX()][lastPos.getY()].getPiece() == null) {
+            DisplayBoardBackground[lastPos.getX()][lastPos.getY()].setBackgroundResource(0);
+        } else if (Board2[lastPos.getX()][lastPos.getY()].getPiece().isWhite()) {
             DisplayBoardBackground[lastPos.getX()][lastPos.getY()].setBackgroundResource(R.drawable.blue_reserved_cell);
-        }
-        else {
+        } else {
             DisplayBoardBackground[lastPos.getX()][lastPos.getY()].setBackgroundResource(R.drawable.red_reserved_cell);
         }
     }
-    private void gameover(){
+
+    private void gameover() {
         Toast.makeText(this, "Game Over", Toast.LENGTH_LONG).show();
     }
 
-    private Coordinates updateXY(int laserDirection, Coordinates coordinates){
+    public void undo(View v) {
+        String s = String.valueOf(numberOfMoves);
+        Log.w("123", s);
+        if (numberOfMoves > 0) {
+
+            for (int g = 0; g < 8; g++) {
+                for (int h = 0; h < 8; h++) {
+                    if (LastMoves.get(numberOfMoves - 1)[g][h].getPiece() == null) {
+                        Board[g][h].setPiece(null);
+                    } else {
+                        Board[g][h].setPiece(LastMoves.get(numberOfMoves - 1)[g][h].getPiece());
+                    }
+                }
+            }
+            numberOfMoves--;
+            setBoard();
+            FirstPlayerTurn = !FirstPlayerTurn;
+        }
+    }
+
+
+    private Coordinates updateXY(int laserDirection, Coordinates coordinates) {
         int x = coordinates.getX();
         int y = coordinates.getY();
-        switch (laserDirection){
+        switch (laserDirection) {
             case 0:
                 x--;
                 break;
@@ -1024,9 +1051,10 @@ public class MainActivity extends AppCompatActivity {
         coordinates = new Coordinates(x, y);
         return coordinates;
     }
+
     private void laserAttack(int laserDirection, Coordinates coordinates) {
 
-        if (coordinates.getX() > 7 || coordinates.getY() > 9 || coordinates.getX() < 0 || coordinates.getY() < 0){
+        if (coordinates.getX() > 7 || coordinates.getY() > 9 || coordinates.getX() < 0 || coordinates.getY() < 0) {
             return;
         }
         String check;
@@ -1083,8 +1111,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
-    private CellResult checkCell(Coordinates coordinates, int laserDirection){
-        if (Board[coordinates.getX()][coordinates.getY()].getPiece() == null){
+
+    private CellResult checkCell(Coordinates coordinates, int laserDirection) {
+        if (Board[coordinates.getX()][coordinates.getY()].getPiece() == null) {
             return NOTHING;
         }
         int direction;
