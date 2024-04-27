@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     boolean DoubleMirrorSelected = false;
     public Coordinates lastPos = null;
     public Coordinates clickedPosition = new Coordinates(0, 0);
-    public Coordinates blueLaserCords = new Coordinates(6, 9);
+    public Coordinates blueLaserCords = new Coordinates(7, 9);
     public Coordinates redLaserCords = new Coordinates(0, 0);
     public TextView game_over;
     public TextView[][] DisplayBoard = new TextView[8][10];
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         wMirror1 = new Mirror(true, 90);
         wMirror2 = new Mirror(true, 0);
         wMirror3 = new Mirror(true, 90);
-        wMirror4 = new Mirror(true, 0);
+        wMirror4 = new Mirror(true, 90);
         wMirror5 = new Mirror(true, 0);
         wMirror6 = new Mirror(true, 180);
         wMirror7 = new Mirror(true, 90);
@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
             for (int j = 0; j < 10; j++) {
                 Board[i][j] = new Position(null);
                 Board2[i][j] = new Position(null);
+                Board3[i][j] = new Position(null);
             }
         }
         Board[0][0].setPiece(rLaser);
@@ -363,15 +364,15 @@ public class MainActivity extends AppCompatActivity {
         DisplayBoard[7][8].setBackgroundResource(R.drawable.red_reserved_cell);
         Board2[7][8].setPiece(rReservedCell);
 
-//        for (int g = 0; g < 8; g++) {
-//            for (int h = 0; h < 10; h++) {
-//                if (Board[g][h].getPiece() == null) {
-//                    Board3[g][h].setPiece(null);
-//                } else {
-//                    Board3[g][h].setPiece(Board[g][h].getPiece());
-//                }
-//            }
-//        }
+        for(int g=0;g<8;g++){
+            for(int h=0;h<10;h++){
+                if(Board[g][h].getPiece()==null){
+                    Board3[g][h].setPiece(null);
+                }else{
+                    Board3[g][h].setPiece(Board[g][h].getPiece());
+                }
+            }
+        }
 
         numberOfMoves = 0;
         AnythingSelected = false;
@@ -805,17 +806,17 @@ public class MainActivity extends AppCompatActivity {
             clickedPosition.setY(9);
             Log.w("myApp", "test");
         } else if (viewId == R.id.rotate_left) {
+            saveBoard();
             rotatePieceLeft(Board[clickedPosition.getX()][clickedPosition.getY()].getPiece());
             Log.w("myAppLeft", "rotated");
-            saveBoard();
             resetColorAtAllowedPosition(listOfCoordinates);
             setBoard();
             return;
         } else if (viewId == R.id.rotate_right) {
+            saveBoard();
             rotatePieceRight(Board[clickedPosition.getX()][clickedPosition.getY()].getPiece());
             resetColorAtAllowedPosition(listOfCoordinates);
             Log.w("myAppRight", "rotated");
-            saveBoard();
             setBoard();
             return;
         } else if (viewId == R.id.undo) {
@@ -874,11 +875,11 @@ public class MainActivity extends AppCompatActivity {
                     Piece p = Board[clickedPosition.getX()][clickedPosition.getY()].getPiece();
 
                     if (moveIsAllowed(listOfCoordinates, clickedPosition)) {
-                        if (DoubleMirrorSelected && (p instanceof Mirror || p instanceof Defender)) {
+                        if (Board[lastPos.getX()][lastPos.getY()].getPiece() instanceof DoubleMirror && (p instanceof Mirror || p instanceof Defender)) {
                             saveBoard();
                             Board[clickedPosition.getX()][clickedPosition.getY()].setPiece(Board[lastPos.getX()][lastPos.getY()].getPiece()); // ставит фигуру на прошлой позиции на clickedPosition
                             Board[lastPos.getX()][lastPos.getY()].setPiece(p); // меняет фигуру на прошлой позиции
-                            laserAttack(wLaser.getDirection(), blueLaserCords);
+                            startLaserAttack(FirstPlayerTurn);
                             FirstPlayerTurn = !FirstPlayerTurn;// ход другому игроку
                             resetColorAtAllowedPosition(listOfCoordinates);
                             DisplayBoard[lastPos.getX()][lastPos.getY()].setBackgroundResource(0);
@@ -1010,21 +1011,22 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "Game Over", Toast.LENGTH_LONG).show();
     }
 
-    public void undo(View v) {
+    public void undo(View v){
         String s = String.valueOf(numberOfMoves);
         Log.w("123", s);
-        if (numberOfMoves > 0) {
+        if(numberOfMoves>0) {
 
-            for (int g = 0; g < 8; g++) {
-                for (int h = 0; h < 8; h++) {
-                    if (LastMoves.get(numberOfMoves - 1)[g][h].getPiece() == null) {
+            for(int g=0;g<8;g++){
+                for(int h=0;h<10;h++){
+                    if(LastMoves.get(numberOfMoves-1)[g][h].getPiece()==null){
                         Board[g][h].setPiece(null);
-                    } else {
-                        Board[g][h].setPiece(LastMoves.get(numberOfMoves - 1)[g][h].getPiece());
+                    }else{
+                        Board[g][h].setPiece(LastMoves.get(numberOfMoves-1)[g][h].getPiece());
                     }
                 }
             }
             numberOfMoves--;
+
             setBoard();
             FirstPlayerTurn = !FirstPlayerTurn;
         }
@@ -1050,6 +1052,10 @@ public class MainActivity extends AppCompatActivity {
         }
         coordinates = new Coordinates(x, y);
         return coordinates;
+    }
+    private void startLaserAttack(Boolean FirstPlayerTurn){
+        if (FirstPlayerTurn){ laserAttack(wLaser.getDirection(), updateXY(wLaser.getDirection(), blueLaserCords)); }
+        if (!FirstPlayerTurn) { laserAttack(rLaser.getDirection(), updateXY(rLaser.getDirection(), redLaserCords));}
     }
 
     private void laserAttack(int laserDirection, Coordinates coordinates) {
