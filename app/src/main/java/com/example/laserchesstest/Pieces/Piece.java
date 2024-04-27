@@ -1,11 +1,29 @@
 package com.example.laserchesstest.Pieces;
 
+import androidx.annotation.NonNull;
+
 import com.example.laserchesstest.Coordinates;
 import com.example.laserchesstest.Position;
 
 import java.util.ArrayList;
 
-public class Piece {
+public class Piece implements Cloneable{
+
+    private ArrayList<Object> stringList;
+
+    @NonNull
+    @Override
+    public Piece clone() {
+        try {
+            // Сначала копируем примитивные типы или неизменяемые объекты
+            Piece cloned = (Piece) super.clone();
+            // Затем копируем изменяемые объекты
+            cloned.stringList = new ArrayList<>(stringList); // Глубокое копирование списка строк
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e); // Обработка исключения CloneNotSupportedException
+        }
+    }
 
     private boolean white;
     private int direction;
@@ -27,6 +45,7 @@ public class Piece {
         }
         this.white = white;
         this.direction = direction;
+        this.stringList = new ArrayList<>();
     }
 
     public boolean isWhite() {

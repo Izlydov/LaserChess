@@ -975,7 +975,8 @@ public class MainActivity extends AppCompatActivity {
                 if (Board[g][h].getPiece() == null) {
                     LastMoves.get(numberOfMoves - 1)[g][h].setPiece(null);
                 } else {
-                    LastMoves.get(numberOfMoves - 1)[g][h].setPiece(Board[g][h].getPiece());
+                    Piece p = Board[g][h].getPiece();
+                    LastMoves.get(numberOfMoves - 1)[g][h].setPiece(p.clone());
                 }
             }
         }
@@ -1015,7 +1016,6 @@ public class MainActivity extends AppCompatActivity {
         String s = String.valueOf(numberOfMoves);
         Log.w("123", s);
         if(numberOfMoves>0) {
-
             for(int g=0;g<8;g++){
                 for(int h=0;h<10;h++){
                     if(LastMoves.get(numberOfMoves-1)[g][h].getPiece()==null){
