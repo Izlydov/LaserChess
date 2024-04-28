@@ -11,13 +11,15 @@ import static com.example.laserchesstest.CellResult.STOP;
 import static com.example.laserchesstest.CellResult.TOP;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 
 import com.example.laserchesstest.Pieces.Defender;
 import com.example.laserchesstest.Pieces.DoubleMirror;
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     public TextView[][] DisplayBoard = new TextView[8][10];
     public TextView[][] DisplayBoardBackground = new TextView[8][10];
     public ArrayList<Position[][]> LastMoves = new ArrayList<>();
-    public ArrayList<CellResult> LaserWay = new ArrayList<>();
+    public ArrayList<Object[]> LaserWay = new ArrayList<Object[]>();
     public int numberOfMoves;
 
 
@@ -83,6 +85,43 @@ public class MainActivity extends AppCompatActivity {
 
     Piece bReservedCell;
     Piece rReservedCell;
+    Drawable blue_Mirror_0;
+    Drawable blue_Mirror_90;
+    Drawable blue_Mirror_180;
+    Drawable blue_Mirror_270;
+    Drawable blue_DoubleMirror_0;
+    Drawable blue_DoubleMirror_90;
+    Drawable blue_DoubleMirror_180;
+    Drawable blue_DoubleMirror_270;
+    Drawable blue_Defender_0;
+    Drawable blue_Defender_90;
+    Drawable blue_Defender_180;
+    Drawable blue_Defender_270;
+    Drawable blue_Laser_0;
+    Drawable blue_Laser_90;
+    Drawable blue_Laser_180;
+    Drawable blue_Laser_270;
+    Drawable blue_King;
+    Drawable blue_Reserved_Cell;
+    Drawable red_Mirror_0;
+    Drawable red_Mirror_90;
+    Drawable red_Mirror_180;
+    Drawable red_Mirror_270;
+    Drawable red_DoubleMirror_0;
+    Drawable red_DoubleMirror_90;
+    Drawable red_DoubleMirror_180;
+    Drawable red_DoubleMirror_270;
+    Drawable red_Defender_0;
+    Drawable red_Defender_90;
+    Drawable red_Defender_180;
+    Drawable red_Defender_270;
+    Drawable red_Laser_0;
+    Drawable red_Laser_90;
+    Drawable red_Laser_180;
+    Drawable red_Laser_270;
+    Drawable red_King;
+    Drawable red_Reserved_Cell;
+    Drawable blank_Cell;
 
     private void initializeBoard() {
 
@@ -121,6 +160,45 @@ public class MainActivity extends AppCompatActivity {
         bReservedCell = new ReservedCell(true, 0);
         rReservedCell = new ReservedCell(false, 0);
 
+        red_Mirror_0 = ContextCompat.getDrawable(this, R.drawable.red_b);
+        red_Mirror_90 = ContextCompat.getDrawable(this, R.drawable.red_b_90);
+        red_Mirror_180 = ContextCompat.getDrawable(this, R.drawable.red_b_180);
+        red_Mirror_270 = ContextCompat.getDrawable(this, R.drawable.red_b_270);
+        red_DoubleMirror_0 = ContextCompat.getDrawable(this, R.drawable.red_s);
+        red_DoubleMirror_90 = ContextCompat.getDrawable(this, R.drawable.red_s_90);
+        red_DoubleMirror_180 = ContextCompat.getDrawable(this, R.drawable.red_s_180);
+        red_DoubleMirror_270 = ContextCompat.getDrawable(this, R.drawable.red_s_270);
+        red_Defender_0 = ContextCompat.getDrawable(this, R.drawable.red_d);
+        red_Defender_90 = ContextCompat.getDrawable(this, R.drawable.red_d_90);
+        red_Defender_180 = ContextCompat.getDrawable(this, R.drawable.red_d_180);
+        red_Defender_270 = ContextCompat.getDrawable(this, R.drawable.red_d_270);
+        red_Laser_0 = ContextCompat.getDrawable(this, R.drawable.red_l);
+        red_Laser_90 = ContextCompat.getDrawable(this, R.drawable.red_l_90);
+        red_Laser_180 = ContextCompat.getDrawable(this, R.drawable.red_l_180);
+        red_Laser_270 = ContextCompat.getDrawable(this, R.drawable.red_l_270);
+        red_King = ContextCompat.getDrawable(this, R.drawable.red_k);
+        red_Reserved_Cell = ContextCompat.getDrawable(this, R.drawable.red_reserved_cell);
+
+        blue_Mirror_0 = ContextCompat.getDrawable(this, R.drawable.blue_b);
+        blue_Mirror_90 = ContextCompat.getDrawable(this, R.drawable.blue_b_90);
+        blue_Mirror_180 = ContextCompat.getDrawable(this, R.drawable.blue_b_180);
+        blue_Mirror_270 = ContextCompat.getDrawable(this, R.drawable.blue_b_270);
+        blue_DoubleMirror_0 = ContextCompat.getDrawable(this, R.drawable.blue_s);
+        blue_DoubleMirror_90 = ContextCompat.getDrawable(this, R.drawable.blue_s_90);
+        blue_DoubleMirror_180 = ContextCompat.getDrawable(this, R.drawable.blue_s_180);
+        blue_DoubleMirror_270 = ContextCompat.getDrawable(this, R.drawable.blue_s_270);
+        blue_Defender_0 = ContextCompat.getDrawable(this, R.drawable.blue_d);
+        blue_Defender_90 = ContextCompat.getDrawable(this, R.drawable.blue_d_90);
+        blue_Defender_180 = ContextCompat.getDrawable(this, R.drawable.blue_d_180);
+        blue_Defender_270 = ContextCompat.getDrawable(this, R.drawable.blue_d_270);
+        blue_Laser_0 = ContextCompat.getDrawable(this, R.drawable.blue_l);
+        blue_Laser_90 = ContextCompat.getDrawable(this, R.drawable.blue_l_90);
+        blue_Laser_180 = ContextCompat.getDrawable(this, R.drawable.blue_l_180);
+        blue_Laser_270 = ContextCompat.getDrawable(this, R.drawable.blue_l_270);
+        blue_King = ContextCompat.getDrawable(this, R.drawable.blue_k);
+        blue_Reserved_Cell = ContextCompat.getDrawable(this, R.drawable.blue_reserved_cell);
+        blank_Cell = ContextCompat.getDrawable(this, R.drawable.blank_cell);
+
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 10; j++) {
@@ -156,7 +234,6 @@ public class MainActivity extends AppCompatActivity {
         Board[7][3].setPiece(wDefender1);
         Board[7][4].setPiece(wKing);
         Board[7][5].setPiece(wDefender2);
-
 
         DisplayBoard[0][0] = (TextView) findViewById(R.id.R00);
         DisplayBoardBackground[0][0] = (TextView) findViewById(R.id.R00);
@@ -326,42 +403,42 @@ public class MainActivity extends AppCompatActivity {
         DisplayBoard[7][9] = (TextView) findViewById(R.id.R79);
         DisplayBoardBackground[7][9] = (TextView) findViewById(R.id.R79);
 
-        DisplayBoard[0][1].setBackgroundResource(R.drawable.blue_reserved_cell);
+        DisplayBoard[0][1].setBackground(blue_Reserved_Cell);
         Board2[0][1].setPiece(bReservedCell);
-        DisplayBoard[0][9].setBackgroundResource(R.drawable.blue_reserved_cell);
+        DisplayBoard[0][9].setBackground(blue_Reserved_Cell);
         Board2[0][9].setPiece(bReservedCell);
-        DisplayBoard[1][9].setBackgroundResource(R.drawable.blue_reserved_cell);
+        DisplayBoard[1][9].setBackground(blue_Reserved_Cell);
         Board2[1][9].setPiece(bReservedCell);
-        DisplayBoard[2][9].setBackgroundResource(R.drawable.blue_reserved_cell);
+        DisplayBoard[2][9].setBackground(blue_Reserved_Cell);
         Board2[2][9].setPiece(bReservedCell);
-        DisplayBoard[3][9].setBackgroundResource(R.drawable.blue_reserved_cell);
+        DisplayBoard[3][9].setBackground(blue_Reserved_Cell);
         Board2[3][9].setPiece(bReservedCell);
-        DisplayBoard[4][9].setBackgroundResource(R.drawable.blue_reserved_cell);
+        DisplayBoard[4][9].setBackground(blue_Reserved_Cell);
         Board2[4][9].setPiece(bReservedCell);
-        DisplayBoard[5][9].setBackgroundResource(R.drawable.blue_reserved_cell);
+        DisplayBoard[5][9].setBackground(blue_Reserved_Cell);
         Board2[5][9].setPiece(bReservedCell);
-        DisplayBoard[6][9].setBackgroundResource(R.drawable.blue_reserved_cell);
+        DisplayBoard[6][9].setBackground(blue_Reserved_Cell);
         Board2[6][9].setPiece(bReservedCell);
-        DisplayBoard[7][1].setBackgroundResource(R.drawable.blue_reserved_cell);
+        DisplayBoard[7][1].setBackground(blue_Reserved_Cell);
         Board2[7][1].setPiece(bReservedCell);
 
-        DisplayBoard[1][0].setBackgroundResource(R.drawable.red_reserved_cell);
+        DisplayBoard[1][0].setBackground(red_Reserved_Cell);
         Board2[1][0].setPiece(rReservedCell);
-        DisplayBoard[2][0].setBackgroundResource(R.drawable.red_reserved_cell);
+        DisplayBoard[2][0].setBackground(red_Reserved_Cell);
         Board2[2][0].setPiece(rReservedCell);
-        DisplayBoard[3][0].setBackgroundResource(R.drawable.red_reserved_cell);
+        DisplayBoard[3][0].setBackground(red_Reserved_Cell);
         Board2[3][0].setPiece(rReservedCell);
-        DisplayBoard[4][0].setBackgroundResource(R.drawable.red_reserved_cell);
+        DisplayBoard[4][0].setBackground(red_Reserved_Cell);
         Board2[4][0].setPiece(rReservedCell);
-        DisplayBoard[5][0].setBackgroundResource(R.drawable.red_reserved_cell);
+        DisplayBoard[5][0].setBackground(red_Reserved_Cell);
         Board2[5][0].setPiece(rReservedCell);
-        DisplayBoard[6][0].setBackgroundResource(R.drawable.red_reserved_cell);
+        DisplayBoard[6][0].setBackground(red_Reserved_Cell);
         Board2[6][0].setPiece(rReservedCell);
-        DisplayBoard[7][0].setBackgroundResource(R.drawable.red_reserved_cell);
+        DisplayBoard[7][0].setBackground(red_Reserved_Cell);
         Board2[7][0].setPiece(rReservedCell);
-        DisplayBoard[0][8].setBackgroundResource(R.drawable.red_reserved_cell);
+        DisplayBoard[0][8].setBackground(red_Reserved_Cell);
         Board2[0][8].setPiece(rReservedCell);
-        DisplayBoard[7][8].setBackgroundResource(R.drawable.red_reserved_cell);
+        DisplayBoard[7][8].setBackground(red_Reserved_Cell);
         Board2[7][8].setPiece(rReservedCell);
 
         for(int g=0;g<8;g++){
@@ -401,9 +478,9 @@ public class MainActivity extends AppCompatActivity {
                     switch (x) {
                         case 0:
                             if (p.isWhite()) {
-                                DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_k);
+                                DisplayBoard[i][j].setBackground(blue_King);
                             } else {
-                                DisplayBoard[i][j].setBackgroundResource(R.drawable.red_k);
+                                DisplayBoard[i][j].setBackground(red_King);
                             }
                             break;
 
@@ -411,32 +488,32 @@ public class MainActivity extends AppCompatActivity {
                             if (p.isWhite()) {
                                 switch (dir) {
                                     case 0:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_d);
+                                        DisplayBoard[i][j].setBackground(blue_Defender_0);
                                         break;
                                     case 90:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_d_90);
+                                        DisplayBoard[i][j].setBackground(blue_Defender_90);
                                         break;
                                     case 180:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_d_180);
+                                        DisplayBoard[i][j].setBackground(blue_Defender_180);
                                         break;
                                     case 270:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_d_270);
+                                        DisplayBoard[i][j].setBackground(blue_Defender_270);
                                         break;
                                     default:
                                 }
                             } else {
                                 switch (dir) {
                                     case 0:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.red_d);
+                                        DisplayBoard[i][j].setBackground(red_Defender_0);
                                         break;
                                     case 90:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.red_d_90);
+                                        DisplayBoard[i][j].setBackground(red_Defender_90);
                                         break;
                                     case 180:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.red_d_180);
+                                        DisplayBoard[i][j].setBackground(red_Defender_180);
                                         break;
                                     case 270:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.red_d_270);
+                                        DisplayBoard[i][j].setBackground(red_Defender_270);
                                         break;
                                     default:
                                 }
@@ -447,32 +524,32 @@ public class MainActivity extends AppCompatActivity {
                             if (p.isWhite()) {
                                 switch (dir) {
                                     case 0:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_s);
+                                        DisplayBoard[i][j].setBackground(blue_DoubleMirror_0);
                                         break;
                                     case 90:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_s_90);
+                                        DisplayBoard[i][j].setBackground(blue_DoubleMirror_90);
                                         break;
                                     case 180:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_s_180);
+                                        DisplayBoard[i][j].setBackground(blue_DoubleMirror_180);
                                         break;
                                     case 270:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_s_270);
+                                        DisplayBoard[i][j].setBackground(blue_DoubleMirror_270);
                                         break;
                                     default:
                                 }
                             } else {
                                 switch (dir) {
                                     case 0:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.red_s);
+                                        DisplayBoard[i][j].setBackground(red_DoubleMirror_0);
                                         break;
                                     case 90:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.red_s_90);
+                                        DisplayBoard[i][j].setBackground(red_DoubleMirror_90);
                                         break;
                                     case 180:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.red_s_180);
+                                        DisplayBoard[i][j].setBackground(red_DoubleMirror_180);
                                         break;
                                     case 270:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.red_s_270);
+                                        DisplayBoard[i][j].setBackground(red_DoubleMirror_270);
                                         break;
                                     default:
                                 }
@@ -483,32 +560,32 @@ public class MainActivity extends AppCompatActivity {
                             if (p.isWhite()) {
                                 switch (dir) {
                                     case 0:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_b);
+                                        DisplayBoard[i][j].setBackground(blue_Mirror_0);
                                         break;
                                     case 90:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_b_90);
+                                        DisplayBoard[i][j].setBackground(blue_Mirror_90);
                                         break;
                                     case 180:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_b_180);
+                                        DisplayBoard[i][j].setBackground(blue_Mirror_180);
                                         break;
                                     case 270:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_b_270);
+                                        DisplayBoard[i][j].setBackground(blue_Mirror_270);
                                         break;
                                     default:
                                 }
                             } else {
                                 switch (dir) {
                                     case 0:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.red_b);
+                                        DisplayBoard[i][j].setBackground(red_Mirror_0);
                                         break;
                                     case 90:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.red_b_90);
+                                        DisplayBoard[i][j].setBackground(red_Mirror_90);
                                         break;
                                     case 180:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.red_b_180);
+                                        DisplayBoard[i][j].setBackground(red_Mirror_180);
                                         break;
                                     case 270:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.red_b_270);
+                                        DisplayBoard[i][j].setBackground(red_Mirror_270);
                                         break;
                                     default:
                                 }
@@ -520,32 +597,32 @@ public class MainActivity extends AppCompatActivity {
                             if (p.isWhite()) {
                                 switch (dir) {
                                     case 0:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_l);
+                                        DisplayBoard[i][j].setBackground(blue_Laser_0);
                                         break;
                                     case 90:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_l_90);
+                                        DisplayBoard[i][j].setBackground(blue_Laser_90);
                                         break;
                                     case 180:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_l_180);
+                                        DisplayBoard[i][j].setBackground(blue_Laser_180);
                                         break;
                                     case 270:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.blue_l_270);
+                                        DisplayBoard[i][j].setBackground(blue_Laser_270);
                                         break;
                                     default:
                                 }
                             } else {
                                 switch (dir) {
                                     case 0:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.red_l);
+                                        DisplayBoard[i][j].setBackground(red_Laser_0);
                                         break;
                                     case 90:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.red_l_90);
+                                        DisplayBoard[i][j].setBackground(red_Laser_90);
                                         break;
                                     case 180:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.red_l_180);
+                                        DisplayBoard[i][j].setBackground(red_Laser_180);
                                         break;
                                     case 270:
-                                        DisplayBoard[i][j].setBackgroundResource(R.drawable.red_l_270);
+                                        DisplayBoard[i][j].setBackground(red_Laser_270);
                                         break;
                                     default:
                                 }
@@ -556,7 +633,7 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 } else {
-//                    DisplayBoard[i][j].setBackgroundResource(R.color.boardColor);
+                    // здесь может быть boardColor
                 }
             }
         }
@@ -806,14 +883,12 @@ public class MainActivity extends AppCompatActivity {
             clickedPosition.setY(9);
             Log.w("myApp", "test");
         } else if (viewId == R.id.rotate_left) {
-            saveBoard();
             rotatePieceLeft(Board[clickedPosition.getX()][clickedPosition.getY()].getPiece());
             Log.w("myAppLeft", "rotated");
             resetColorAtAllowedPosition(listOfCoordinates);
             setBoard();
             return;
         } else if (viewId == R.id.rotate_right) {
-            saveBoard();
             rotatePieceRight(Board[clickedPosition.getX()][clickedPosition.getY()].getPiece());
             resetColorAtAllowedPosition(listOfCoordinates);
             Log.w("myAppRight", "rotated");
@@ -853,6 +928,7 @@ public class MainActivity extends AppCompatActivity {
                     saveBoard();
                     Board[clickedPosition.getX()][clickedPosition.getY()].setPiece(Board[lastPos.getX()][lastPos.getY()].getPiece()); // ставит фигуру на прошлой позиции на clickedPosition
                     Board[lastPos.getX()][lastPos.getY()].setPiece(null); // убирает фигуру на прошлой позиции
+                    startLaserAttack(FirstPlayerTurn);
                     FirstPlayerTurn = !FirstPlayerTurn;// ход другому игроку
                     resetColorAtAllowedPosition(listOfCoordinates);
                     DisplayBoard[lastPos.getX()][lastPos.getY()].setBackgroundResource(0);
@@ -924,15 +1000,26 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i = 0; i < list.size(); i++) {
             if (Board[list.get(i).getX()][list.get(i).getY()].getPiece() == null) {
-                if (Board[list.get(i).getX()][list.get(i).getY()].getPiece() == null) {
-                    DisplayBoardBackground[list.get(i).getX()][list.get(i).getY()].setBackgroundResource(R.color.transparent_green);
-                }
+                DisplayBoard[list.get(i).getX()][list.get(i).getY()].setBackgroundResource(R.color.transparent_green);
+            }
+            else {
+//                Drawable drawable1 = ContextCompat.getDrawable(this, R.drawable.blue_reserved_cell);
+//                Drawable drawable2 = ContextCompat.getDrawable(this, R.drawable.blue_d);
+//                Drawable[] layers = new Drawable[2];
+//                layers[0] = drawable1;
+//                layers[1] = drawable2;
+//                LayerDrawable layerDrawable = new LayerDrawable(layers);
+//
+//                layerDrawable.setAlpha(128); // 128 - полупрозрачность (от 0 до 255)
+//
+//                DisplayBoard[list.get(i).getX()][list.get(i).getY()].setBackgroundResource(R.drawable.red_reserved_cell);
             }
         }
     }
 
     private void rotatePieceRight(Piece p) {
         if (p != null && p.isWhite() == FirstPlayerTurn) {
+            saveBoard();
             p.setDirection(p.getDirection() + 90);
             if (p.getDirection() == 360) {
                 p.setDirection(0);
@@ -948,6 +1035,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void rotatePieceLeft(Piece p) {
         if (p != null && p.isWhite() == FirstPlayerTurn) {
+            saveBoard();
             p.setDirection(p.getDirection() - 90);
             if (p.getDirection() == 360) {
                 p.setDirection(0);
@@ -1000,11 +1088,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void resetColorAtLastPosition(Coordinates lastPos) {
         if (Board2[lastPos.getX()][lastPos.getY()].getPiece() == null) {
-            DisplayBoardBackground[lastPos.getX()][lastPos.getY()].setBackgroundResource(0);
+            DisplayBoard[lastPos.getX()][lastPos.getY()].setBackground(blank_Cell);
         } else if (Board2[lastPos.getX()][lastPos.getY()].getPiece().isWhite()) {
-            DisplayBoardBackground[lastPos.getX()][lastPos.getY()].setBackgroundResource(R.drawable.blue_reserved_cell);
+            DisplayBoard[lastPos.getX()][lastPos.getY()].setBackgroundResource(R.drawable.blue_reserved_cell);
         } else {
-            DisplayBoardBackground[lastPos.getX()][lastPos.getY()].setBackgroundResource(R.drawable.red_reserved_cell);
+            DisplayBoard[lastPos.getX()][lastPos.getY()].setBackgroundResource(R.drawable.red_reserved_cell);
         }
     }
 
@@ -1026,6 +1114,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             numberOfMoves--;
+            AnythingSelected = false;
 
             setBoard();
             FirstPlayerTurn = !FirstPlayerTurn;
@@ -1054,13 +1143,15 @@ public class MainActivity extends AppCompatActivity {
         return coordinates;
     }
     private void startLaserAttack(Boolean FirstPlayerTurn){
+        Log.w("LaserAttackStart", "Started");
         if (FirstPlayerTurn){ laserAttack(wLaser.getDirection(), updateXY(wLaser.getDirection(), blueLaserCords)); }
-        if (!FirstPlayerTurn) { laserAttack(rLaser.getDirection(), updateXY(rLaser.getDirection(), redLaserCords));}
+        if (!FirstPlayerTurn) { laserAttack(rLaser.getDirection(), updateXY(rLaser.getDirection(), redLaserCords)); }
     }
 
     private void laserAttack(int laserDirection, Coordinates coordinates) {
 
         if (coordinates.getX() > 7 || coordinates.getY() > 9 || coordinates.getX() < 0 || coordinates.getY() < 0) {
+            drawLaserWay();
             return;
         }
         String check;
@@ -1070,32 +1161,38 @@ public class MainActivity extends AppCompatActivity {
         switch (checkCell(coordinates, laserDirection)) {
             case STOP:
                 Log.w("Switch", "Stopped");
+                addCell(STOP, coordinates, laserDirection);
                 break;
             case KILL:
+                addCell(KILL, coordinates, laserDirection);
                 Board[coordinates.getX()][coordinates.getY()].setPiece(null);
                 DisplayBoardBackground[coordinates.getX()][coordinates.getY()].setBackgroundResource(0);
                 break;
             case LEFT:
                 laserDirection = 270;
                 Log.w("Switch", "RotatedtoLeft");
+                addCell(LEFT, coordinates, laserDirection);
                 coordinates = updateXY(laserDirection, coordinates);
                 laserAttack(laserDirection, coordinates);
                 break;
             case RIGHT:
                 laserDirection = 90;
                 Log.w("Switch", "RotatedtoRight");
+                addCell(RIGHT, coordinates, laserDirection);
                 coordinates = updateXY(laserDirection, coordinates);
                 laserAttack(laserDirection, coordinates);
                 break;
             case TOP:
                 laserDirection = 0;
                 Log.w("Switch", "RotatedtoTop");
+                addCell(TOP, coordinates, laserDirection);
                 coordinates = updateXY(laserDirection, coordinates);
                 laserAttack(laserDirection, coordinates);
                 break;
             case BOTTOM:
                 laserDirection = 180;
                 Log.w("Switch", "RotatedtoBottom");
+                addCell(BOTTOM, coordinates, laserDirection);
                 coordinates = updateXY(laserDirection, coordinates);
                 laserAttack(laserDirection, coordinates);
                 break;
@@ -1104,17 +1201,29 @@ public class MainActivity extends AppCompatActivity {
                 Board[coordinates.getX()][coordinates.getY()].setPiece(null);
                 gameover();
                 return;
-            case DOUBLE_MIRROR:
-                Log.w("Switch", "Got DoubleMirror");
-                break;
             case NOTHING:
                 Log.w("Switch", "Nothing");
+                addCell(NOTHING, coordinates, laserDirection);
                 coordinates = updateXY(laserDirection, coordinates);
                 laserAttack(laserDirection, coordinates);
                 break;
             case NULL:
                 Log.w("Switch", "Got Null");
                 break;
+        }
+    }
+    public void addCell(CellResult result, Coordinates coordinates, int laserDirection) {
+        Object[] cell = {result, coordinates, laserDirection};
+        LaserWay.add(cell);
+    }
+    public void drawLaserWay(){
+        for (Object[] cell : LaserWay) {
+            CellResult result = (CellResult) cell[0];
+            Coordinates coordinates = (Coordinates) cell[1];
+            int laserDirection = (int) cell[2];
+            DisplayBoard[coordinates.getX()][coordinates.getY()].setBackground(blue_Defender_0);
+            String s = "Result: " + result + ", Coordinates: (" + coordinates.getX() + ", " + coordinates.getY() + ")" + ", laserDirection = " + laserDirection;
+            Log.w("draw", s);
         }
     }
 
