@@ -962,7 +962,7 @@ public class MainActivity extends AppCompatActivity {
                     startLaserAttack(FirstPlayerTurn);
                     FirstPlayerTurn = !FirstPlayerTurn;// ход другому игроку
                     resetColorAtAllowedPosition(listOfCoordinates);
-                    DisplayBoard[lastPos.getX()][lastPos.getY()].setBackgroundResource(0);
+//                    DisplayBoard[lastPos.getX()][lastPos.getY()].setBackgroundResource(0);
                     resetColorAtLastPosition(lastPos);
                     AnythingSelected = false;
                     DoubleMirrorSelected = false;
@@ -1117,7 +1117,6 @@ public class MainActivity extends AppCompatActivity {
             DisplayBoard[lastPos.getX()][lastPos.getY()].setBackground(blank_Cell);
         } else if (Board2[lastPos.getX()][lastPos.getY()].getPiece().isWhite()) {
             DisplayBoard[lastPos.getX()][lastPos.getY()].setBackground(blue_Reserved_Cell);
-            DisplayBoard[lastPos.getX()][lastPos.getY()].setBackground(red_Reserved_Cell);
         } else {
             DisplayBoard[lastPos.getX()][lastPos.getY()].setBackground(red_Reserved_Cell);
         }
@@ -1195,7 +1194,8 @@ public class MainActivity extends AppCompatActivity {
                 prevDirection = laserDirection;
                 addCell(KILL, coordinates, laserDirection, prevDirection);
                 Board[coordinates.getX()][coordinates.getY()].setPiece(null);
-                DisplayBoard[coordinates.getX()][coordinates.getY()].setBackground(blank_Cell);
+//                DisplayBoard[coordinates.getX()][coordinates.getY()].setBackground(blank_Cell);
+                resetColorAtLastPosition(coordinates);
                 drawLaserWay();
                 break;
             case LEFT:
@@ -1369,112 +1369,6 @@ public class MainActivity extends AppCompatActivity {
 
         });
     }
-//    public void drawLaserWay() {
-//            for (Object[] cell : LaserWay) {
-//                CellResult result = (CellResult) cell[0];
-//                Coordinates coordinates = (Coordinates) cell[1];
-//                int laserDirection = (int) cell[2];
-//                int prevDirection = (int) cell[3];
-//                switch (laserDirection) {
-//                    case 0:
-//                        laser_x = laser_0;
-//                        break;
-//                    case 90:
-//                        laser_x = laser_90;
-//                        break;
-//                    case 180:
-//                        laser_x = laser_180;
-//                        break;
-//                    case 270:
-//                        laser_x = laser_270;
-//                        break;
-//                }
-//                switch (result) {
-//                    case KILL:
-//                        break;
-//                    case LEFT:
-//                        if (prevDirection == 0) {
-//                            Drawable[] layers = new Drawable[2];
-//                            layers[0] = DisplayBoard[coordinates.getX()][coordinates.getY()].getBackground();
-//                            layers[1] = laser_LeftBottom;
-//                            layerDrawable = new LayerDrawable(layers);
-//                            DisplayBoard[coordinates.getX()][coordinates.getY()].setBackground(layerDrawable);
-//                            break;
-//                        }
-//                        if (prevDirection == 180) {
-//                            Drawable[] layers = new Drawable[2];
-//                            layers[0] = DisplayBoard[coordinates.getX()][coordinates.getY()].getBackground();
-//                            layers[1] = laser_LeftTop;
-//                            layerDrawable = new LayerDrawable(layers);
-//                            DisplayBoard[coordinates.getX()][coordinates.getY()].setBackground(layerDrawable);
-//                            break;
-//                        }
-//                    case RIGHT:
-//                        if (prevDirection == 0) {
-//                            Drawable[] layers = new Drawable[2];
-//                            layers[0] = DisplayBoard[coordinates.getX()][coordinates.getY()].getBackground();
-//                            layers[1] = laser_RightBottom;
-//                            layerDrawable = new LayerDrawable(layers);
-//                            DisplayBoard[coordinates.getX()][coordinates.getY()].setBackground(layerDrawable);
-//                            break;
-//                        }
-//                        if (prevDirection == 180) {
-//                            Drawable[] layers = new Drawable[2];
-//                            layers[0] = DisplayBoard[coordinates.getX()][coordinates.getY()].getBackground();
-//                            layers[1] = laser_RightTop;
-//                            layerDrawable = new LayerDrawable(layers);
-//                            DisplayBoard[coordinates.getX()][coordinates.getY()].setBackground(layerDrawable);
-//                            break;
-//                        }
-//                        break;
-//                    case TOP:
-//                        if (prevDirection == 90) {
-//                            Drawable[] layers = new Drawable[2];
-//                            layers[0] = DisplayBoard[coordinates.getX()][coordinates.getY()].getBackground();
-//                            layers[1] = laser_LeftTop;
-//                            layerDrawable = new LayerDrawable(layers);
-//                            DisplayBoard[coordinates.getX()][coordinates.getY()].setBackground(layerDrawable);
-//                            break;
-//                        }
-//                        if (prevDirection == 270) {
-//                            Drawable[] layers = new Drawable[2];
-//                            layers[0] = DisplayBoard[coordinates.getX()][coordinates.getY()].getBackground();
-//                            layers[1] = laser_RightTop;
-//                            layerDrawable = new LayerDrawable(layers);
-//                            DisplayBoard[coordinates.getX()][coordinates.getY()].setBackground(layerDrawable);
-//                            break;
-//                        }
-//                    case BOTTOM:
-//                        if (prevDirection == 90) {
-//                            Drawable[] layers = new Drawable[2];
-//                            layers[0] = DisplayBoard[coordinates.getX()][coordinates.getY()].getBackground();
-//                            layers[1] = laser_LeftBottom;
-//                            layerDrawable = new LayerDrawable(layers);
-//                            DisplayBoard[coordinates.getX()][coordinates.getY()].setBackground(layerDrawable);
-//                            break;
-//                        }
-//                        if (prevDirection == 270) {
-//                            Drawable[] layers = new Drawable[2];
-//                            layers[0] = DisplayBoard[coordinates.getX()][coordinates.getY()].getBackground();
-//                            layers[1] = laser_RightBottom;
-//                            layerDrawable = new LayerDrawable(layers);
-//                            DisplayBoard[coordinates.getX()][coordinates.getY()].setBackground(layerDrawable);
-//                            break;
-//                        }
-//                    case NOTHING:
-//                        LaserWayReset.add(coordinates);
-//                        Drawable[] layers = new Drawable[2];
-//                        layers[0] = DisplayBoard[coordinates.getX()][coordinates.getY()].getBackground();
-//                        layers[1] = laser_x;
-//                        layerDrawable = new LayerDrawable(layers);
-//                        DisplayBoard[coordinates.getX()][coordinates.getY()].setBackground(layerDrawable);
-//                        break;
-//                }
-//                String s = "Result: " + result + ", Coordinates: (" + coordinates.getX() + ", " + coordinates.getY() + ")" + ", laserDirection = " + laserDirection;
-//                Log.w("draw", s);
-//            }
-//      Thread.sleep(1000);
-//    }
     public void resetLaserWay(){
         for (Coordinates coordinates : LaserWayReset) {
             if(Board2[coordinates.getX()][coordinates.getY()].getPiece() != null){
@@ -1650,6 +1544,9 @@ public class MainActivity extends AppCompatActivity {
                 }
         }
         return NULL;
+    }
+    private void setReservedCell(Coordinates coordinates){
+        return;
     }
 
 
