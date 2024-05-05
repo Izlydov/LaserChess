@@ -10,9 +10,13 @@ import static com.example.laserchesstest.CellResult.RIGHT;
 import static com.example.laserchesstest.CellResult.STOP;
 import static com.example.laserchesstest.CellResult.TOP;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -133,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
     Drawable red_King;
     Drawable red_Reserved_Cell;
     Drawable blank_Cell;
-    Drawable transparentgreen;
+    Drawable transparent_Green;
     Drawable laser_0;
     Drawable laser_90;
     Drawable laser_180;
@@ -220,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
         blue_King = ContextCompat.getDrawable(this, R.drawable.blue_k);
         blue_Reserved_Cell = ContextCompat.getDrawable(this, R.drawable.blue_reserved_cell);
         blank_Cell = ContextCompat.getDrawable(this, R.drawable.blank_cell);
-        transparentgreen = ContextCompat.getDrawable(this, R.color.transparent_green);
+        transparent_Green = ContextCompat.getDrawable(this, R.color.transparent_green);
 
         laser_0 = ContextCompat.getDrawable(this, R.drawable.laser_180half);
         laser_90 = ContextCompat.getDrawable(this, R.drawable.laser_90half);
@@ -586,7 +590,7 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 } else {
-                    // здесь может быть boardColor
+//                     здесь может быть boardColor
                 }
             }
         }
@@ -835,9 +839,9 @@ public class MainActivity extends AppCompatActivity {
             clickedPosition.setX(7);
             clickedPosition.setY(9);
             Log.w("myApp", "test");
-        } else if (viewId == R.id.info) {
-                inflater = getLayoutInflater();
-                menuActivity.showAlert(MainActivity.this, inflater, "Правила", getResources().getString(R.string.rules));
+//        } else if (viewId == R.id.info) {
+//                inflater = getLayoutInflater();
+//                menuActivity.showAlert(MainActivity.this, inflater, "Правила", getResources().getString(R.string.rules));
         } else if (viewId == R.id.rotate_left) {
             rotatePieceLeft(Board[clickedPosition.getX()][clickedPosition.getY()].getPiece());
             Log.w("myAppLeft", "rotated");
@@ -870,7 +874,6 @@ public class MainActivity extends AppCompatActivity {
                 } else { // смотрим какие ходы разрешены
                     listOfCoordinates.clear();
                     listOfCoordinates = Board[clickedPosition.getX()][clickedPosition.getY()].getPiece().AllowedMoves(clickedPosition, Board);
-                    DisplayBoardBackground[clickedPosition.getX()][clickedPosition.getY()].setBackgroundResource(R.color.colorSelected);
                     AnythingSelected = true;
                     setColorAtAllowedPosition(listOfCoordinates);
                     if (Board[clickedPosition.getX()][clickedPosition.getY()].getPiece() instanceof DoubleMirror) {
@@ -916,7 +919,7 @@ public class MainActivity extends AppCompatActivity {
                             LaserAttacked = true;
                             FirstPlayerTurn = !FirstPlayerTurn;// ход другому игроку
                             resetColorAtAllowedPosition(listOfCoordinates);
-                            DisplayBoard[lastPos.getX()][lastPos.getY()].setBackgroundResource(0);
+                            DisplayBoard[lastPos.getX()][lastPos.getY()].setBackground(blank_Cell);
                             resetColorAtLastPosition(lastPos);
                             AnythingSelected = false;
                             DoubleMirrorSelected = false;
@@ -931,7 +934,7 @@ public class MainActivity extends AppCompatActivity {
                     resetColorAtAllowedPosition(listOfCoordinates);
                     listOfCoordinates.clear();
                     listOfCoordinates = Board[clickedPosition.getX()][clickedPosition.getY()].getPiece().AllowedMoves(clickedPosition, Board);
-                    DisplayBoardBackground[clickedPosition.getX()][clickedPosition.getY()].setBackgroundResource(R.color.colorSelected);
+                    DisplayBoard[clickedPosition.getX()][clickedPosition.getY()].setBackground(transparent_Green);
                     setColorAtAllowedPosition(listOfCoordinates);
                     AnythingSelected = true;
                     DoubleMirrorSelected = false;
@@ -960,10 +963,8 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < list.size(); i++) {
             if (Board[list.get(i).getX()][list.get(i).getY()].getPiece() == null) {
                 layers = new Drawable[2];
-//                    if (Board2[list.get(i).getX()][list.get(i).getY()].getPiece().isWhite()) { layers[0] = blue_Reserved_Cell; }
-//                    else{ layers[0] = red_Reserved_Cell; }
                 layers[0] = DisplayBoard[list.get(i).getX()][list.get(i).getY()].getBackground();
-                layers[1] = transparentgreen;
+                layers[1] = transparent_Green;
                 layerDrawable = new LayerDrawable(layers);
                 DisplayBoard[list.get(i).getX()][list.get(i).getY()].setBackground(layerDrawable);
             }
@@ -1051,6 +1052,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void gameover() {
         Toast.makeText(this, "Game Over", Toast.LENGTH_LONG).show();
+        String result = "Победа синих";
+        if(FirstPlayerTurn){
+            result = "Победа красных";
+        }
+        showGameOverAlert(this, "Игра окончена", result);
     }
 
     public void undo(View v){
@@ -1160,6 +1166,8 @@ public class MainActivity extends AppCompatActivity {
 
             case KING_KILL:
                 Board[coordinates.getX()][coordinates.getY()].setPiece(null);
+                DisplayBoard[coordinates.getX()][coordinates.getY()].setBackground(blue_King);
+                drawLaserWay();
                 gameover();
                 return;
             case NOTHING:
@@ -1471,6 +1479,26 @@ public class MainActivity extends AppCompatActivity {
                 }
         }
         return NULL;
+    }
+    public void showGameOverAlert(Context context, String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("В меню", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        Intent i = new Intent(MainActivity.this, MenuActivity.class);
+                        startActivity(i);
+                    }
+                })
+                .setNeutralButton("Новая игра", new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = getIntent();
+                        finish();
+                        startActivity(intent);
+                    }
+                })
+                .show();
     }
 
 
