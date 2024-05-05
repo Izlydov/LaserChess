@@ -839,9 +839,9 @@ public class MainActivity extends AppCompatActivity {
             clickedPosition.setX(7);
             clickedPosition.setY(9);
             Log.w("myApp", "test");
-//        } else if (viewId == R.id.info) {
-//                inflater = getLayoutInflater();
-//                menuActivity.showAlert(MainActivity.this, inflater, "Правила", getResources().getString(R.string.rules));
+        } else if (viewId == R.id.info) {
+                inflater = getLayoutInflater();
+                menuActivity.showAlert(MainActivity.this, inflater, "Правила", getResources().getString(R.string.rules));
         } else if (viewId == R.id.rotate_left) {
             rotatePieceLeft(Board[clickedPosition.getX()][clickedPosition.getY()].getPiece());
             Log.w("myAppLeft", "rotated");
@@ -892,7 +892,7 @@ public class MainActivity extends AppCompatActivity {
                     startLaserAttack(FirstPlayerTurn);
                     FirstPlayerTurn = !FirstPlayerTurn;// ход другому игроку
                     resetColorAtAllowedPosition(listOfCoordinates);
-//                    DisplayBoard[lastPos.getX()][lastPos.getY()].setBackgroundResource(0);
+//                    DisplayBoard[lastPos.getX()][lastPos.getY()].setBackground(blank_cell);
                     resetColorAtLastPosition(lastPos);
                     AnythingSelected = false;
                     DoubleMirrorSelected = false;
