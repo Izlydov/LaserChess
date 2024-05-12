@@ -23,7 +23,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 
@@ -54,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
     public Coordinates redLaserCords = new Coordinates(0, 0);
     public TextView game_over;
     public TextView[][] DisplayBoard = new TextView[8][10];
-    public TextView[][] DisplayBoardBackground = new TextView[8][10];
     public ArrayList<Position[][]> LastMoves = new ArrayList<>();
     public ArrayList<Object[]> LaserWay = new ArrayList<Object[]>();
     public ArrayList<Coordinates> LaserWayReset = new ArrayList<Coordinates>();
@@ -402,6 +400,9 @@ public class MainActivity extends AppCompatActivity {
             for(int h=0;h<10;h++){
                 if(Board[g][h].getPiece()==null){
                     Board3[g][h].setPiece(null);
+                    if(Board2[g][h].getPiece() == null) {
+                        DisplayBoard[g][h].setBackground(blank_Cell);
+                    }
                 }else{
                     Board3[g][h].setPiece(Board[g][h].getPiece());
                 }
@@ -589,8 +590,6 @@ public class MainActivity extends AppCompatActivity {
                         default:
 
                     }
-                } else {
-//                     здесь может быть boardColor
                 }
             }
         }
@@ -838,21 +837,16 @@ public class MainActivity extends AppCompatActivity {
         } else if (viewId == R.id.R79) {
             clickedPosition.setX(7);
             clickedPosition.setY(9);
-            Log.w("myApp", "test");
         } else if (viewId == R.id.info) {
                 inflater = getLayoutInflater();
                 menuActivity.showAlert(MainActivity.this, inflater, "Правила", getResources().getString(R.string.rules));
         } else if (viewId == R.id.rotate_left) {
             rotatePieceLeft(Board[clickedPosition.getX()][clickedPosition.getY()].getPiece());
             Log.w("myAppLeft", "rotated");
-            startLaserAttack(!FirstPlayerTurn); // !FirstPlayerTurn потому что в методе до ход передается
-            resetColorAtAllowedPosition(listOfCoordinates);
             setBoard();
             return;
         } else if (viewId == R.id.rotate_right) {
             rotatePieceRight(Board[clickedPosition.getX()][clickedPosition.getY()].getPiece());
-            startLaserAttack(!FirstPlayerTurn); // !FirstPlayerTurn потому что в методе до ход передается
-            resetColorAtAllowedPosition(listOfCoordinates);
             Log.w("myAppRight", "rotated");
             setBoard();
             return;
@@ -892,7 +886,7 @@ public class MainActivity extends AppCompatActivity {
                     startLaserAttack(FirstPlayerTurn);
                     FirstPlayerTurn = !FirstPlayerTurn;// ход другому игроку
                     resetColorAtAllowedPosition(listOfCoordinates);
-//                    DisplayBoard[lastPos.getX()][lastPos.getY()].setBackground(blank_cell);
+                    DisplayBoard[lastPos.getX()][lastPos.getY()].setBackground(blank_Cell);
                     resetColorAtLastPosition(lastPos);
                     AnythingSelected = false;
                     DoubleMirrorSelected = false;
@@ -981,8 +975,10 @@ public class MainActivity extends AppCompatActivity {
             if (p.getDirection() < 0) {
                 p.setDirection(360 + p.getDirection());
             }
+            startLaserAttack(FirstPlayerTurn);
             AnythingSelected = false;
             FirstPlayerTurn = !FirstPlayerTurn;
+            resetColorAtAllowedPosition(listOfCoordinates);
 
         }
     }
@@ -997,8 +993,10 @@ public class MainActivity extends AppCompatActivity {
             if (p.getDirection() < 0) {
                 p.setDirection(360 + p.getDirection());
             }
+            startLaserAttack(FirstPlayerTurn);
             AnythingSelected = false;
             FirstPlayerTurn = !FirstPlayerTurn;
+            resetColorAtAllowedPosition(listOfCoordinates);
         }
     }
 
@@ -1051,7 +1049,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void gameover() {
-        Toast.makeText(this, "Game Over", Toast.LENGTH_LONG).show();
         String result = "Победа синих";
         if(FirstPlayerTurn){
             result = "Победа красных";
@@ -1166,7 +1163,6 @@ public class MainActivity extends AppCompatActivity {
 
             case KING_KILL:
                 Board[coordinates.getX()][coordinates.getY()].setPiece(null);
-                DisplayBoard[coordinates.getX()][coordinates.getY()].setBackground(blue_King);
                 drawLaserWay();
                 gameover();
                 return;
