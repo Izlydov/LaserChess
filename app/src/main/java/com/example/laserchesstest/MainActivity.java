@@ -45,13 +45,10 @@ public class MainActivity extends AppCompatActivity {
     public Position[][] Board2 = new Position[8][10];
     public Position[][] Board3 = new Position[8][10];
     public Boolean AnythingSelected = false;
-    public Boolean LaserAttacked = false;
-    boolean DoubleMirrorSelected = false;
     public Coordinates lastPos = null;
     public Coordinates clickedPosition = new Coordinates(0, 0);
     public Coordinates blueLaserCords = new Coordinates(7, 9);
     public Coordinates redLaserCords = new Coordinates(0, 0);
-    public TextView game_over;
     public TextView[][] DisplayBoard = new TextView[8][10];
     public ArrayList<Position[][]> LastMoves = new ArrayList<>();
     public ArrayList<Object[]> LaserWay = new ArrayList<Object[]>();
@@ -870,9 +867,6 @@ public class MainActivity extends AppCompatActivity {
                     listOfCoordinates = Board[clickedPosition.getX()][clickedPosition.getY()].getPiece().AllowedMoves(clickedPosition, Board);
                     AnythingSelected = true;
                     setColorAtAllowedPosition(listOfCoordinates);
-                    if (Board[clickedPosition.getX()][clickedPosition.getY()].getPiece() instanceof DoubleMirror) {
-                        DoubleMirrorSelected = true;
-                    }
                 } // мы выбрали фигуру
             }
 
@@ -889,13 +883,11 @@ public class MainActivity extends AppCompatActivity {
                     DisplayBoard[lastPos.getX()][lastPos.getY()].setBackground(blank_Cell);
                     resetColorAtLastPosition(lastPos);
                     AnythingSelected = false;
-                    DoubleMirrorSelected = false;
 
                 } else { // если куда мы кликнули неразрешено то сбрасываем до 1 клика
                     resetColorAtLastPosition(lastPos);
                     resetColorAtAllowedPosition(listOfCoordinates);
                     AnythingSelected = false;
-                    DoubleMirrorSelected = false;
                 }
 
             } else { // если 2 клик куда мы кликнули есть фигура то выбираем ее и это теперь 1 клик
@@ -910,17 +902,14 @@ public class MainActivity extends AppCompatActivity {
                             Board[clickedPosition.getX()][clickedPosition.getY()].setPiece(Board[lastPos.getX()][lastPos.getY()].getPiece()); // ставит фигуру на прошлой позиции на clickedPosition
                             Board[lastPos.getX()][lastPos.getY()].setPiece(p); // меняет фигуру на прошлой позиции
                             startLaserAttack(FirstPlayerTurn);
-                            LaserAttacked = true;
                             FirstPlayerTurn = !FirstPlayerTurn;// ход другому игроку
                             resetColorAtAllowedPosition(listOfCoordinates);
                             DisplayBoard[lastPos.getX()][lastPos.getY()].setBackground(blank_Cell);
                             resetColorAtLastPosition(lastPos);
                             AnythingSelected = false;
-                            DoubleMirrorSelected = false;
                         }
                     } else {
                         AnythingSelected = false;
-                        DoubleMirrorSelected = false;
                     }
                 } else {
 
@@ -931,7 +920,6 @@ public class MainActivity extends AppCompatActivity {
                     DisplayBoard[clickedPosition.getX()][clickedPosition.getY()].setBackground(transparent_Green);
                     setColorAtAllowedPosition(listOfCoordinates);
                     AnythingSelected = true;
-                    DoubleMirrorSelected = false;
                 }
             }
         }
