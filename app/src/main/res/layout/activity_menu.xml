@@ -9,6 +9,7 @@
     android:scaleType="centerCrop"
     tools:context=".MenuActivity">
 
+
     <Button
         android:id="@+id/button_play"
         android:layout_width="300dp"
@@ -20,20 +21,32 @@
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.762" />
-
+        app:layout_constraintVertical_bias="0.726" />
 
     <Button
-        android:id="@+id/button_rules"
+        android:id="@+id/button_save"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:text="Правила"
-        android:backgroundTint="#F44336"
+        android:backgroundTint="#4CAF50"
+        android:text="Сохранения"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.856" />
+        app:layout_constraintVertical_bias="0.818" />
+
+    <Button
+        android:id="@+id/button_rules"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#F44336"
+        android:text="Правила"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.912" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

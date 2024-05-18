@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.Button;
 
 public class MenuActivity extends AppCompatActivity {
-    Button playButton, rulesButton;
+    Button playButton, rulesButton, savesButton;
     Intent intent;
     LayoutInflater inflater;
 
@@ -20,6 +20,8 @@ public class MenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
+        savesButton = findViewById(R.id.button_save);
         playButton = findViewById(R.id.button_play);
         rulesButton = findViewById(R.id.button_rules);
         inflater = getLayoutInflater();
@@ -36,7 +38,18 @@ public class MenuActivity extends AppCompatActivity {
                 showAlert(MenuActivity.this, inflater, "Правила", getResources().getString(R.string.rules));
             }
         });
+        savesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
+
+
+
+
+
     public void showAlert(Context context, LayoutInflater inflater, String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(title)

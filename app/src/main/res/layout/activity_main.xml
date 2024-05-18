@@ -757,6 +757,18 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
+        android:id="@+id/save"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@color/black"
+        android:clickable="true"
+        android:elevation="1dp"
+        android:longClickable="false"
+        android:onClick="onClick"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/rotate_right"
         android:layout_width="60dp"
         android:layout_height="60dp"

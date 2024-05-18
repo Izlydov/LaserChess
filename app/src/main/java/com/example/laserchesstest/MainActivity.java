@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     public Position[][] Board = new Position[8][10];
     public Position[][] Board2 = new Position[8][10];
     public Position[][] Board3 = new Position[8][10];
+    public GameBoard gameBoard = new GameBoard();
     public Boolean AnythingSelected = false;
     public Coordinates lastPos = null;
     public Coordinates clickedPosition = new Coordinates(0, 0);
@@ -225,7 +226,6 @@ public class MainActivity extends AppCompatActivity {
         laser_90 = ContextCompat.getDrawable(this, R.drawable.laser_90half);
         laser_180 = ContextCompat.getDrawable(this, R.drawable.laser_180half);
         laser_270 = ContextCompat.getDrawable(this, R.drawable.laser_90half);
-        laser_test = ContextCompat.getDrawable(this, R.drawable.laser_turn);
         laser_LeftTop = ContextCompat.getDrawable(this, R.drawable.laser_left_top);
         laser_LeftBottom = ContextCompat.getDrawable(this, R.drawable.laser_left_bottom);
         laser_RightTop = ContextCompat.getDrawable(this, R.drawable.laser_right_top);
@@ -853,6 +853,8 @@ public class MainActivity extends AppCompatActivity {
             Log.w("myAppRight", "undo");
             setBoard();
             return;
+        } else if (viewId == R.id.save) {
+            gameBoard.setBoard(Board);
         }
 
 
