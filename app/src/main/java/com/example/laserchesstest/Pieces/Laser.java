@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 public class Laser extends Piece{
 
-    private int direction;
 
 
     public Laser(boolean white, int direction) {

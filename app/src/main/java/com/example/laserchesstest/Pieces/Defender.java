@@ -6,8 +6,6 @@ import com.example.laserchesstest.Position;
 import java.util.ArrayList;
 public class Defender extends Piece{
 
-    private int direction;
-
     public Defender(boolean white, int direction) {
         super(white, direction);
     }

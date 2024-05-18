@@ -1,6 +1,8 @@
-package com.example.laserchesstest;
+package Database;
 
 import androidx.room.TypeConverter;
+
+import com.example.laserchesstest.Position;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

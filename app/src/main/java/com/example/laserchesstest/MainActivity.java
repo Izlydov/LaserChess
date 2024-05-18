@@ -10,21 +10,27 @@ import static com.example.laserchesstest.CellResult.RIGHT;
 import static com.example.laserchesstest.CellResult.STOP;
 import static com.example.laserchesstest.CellResult.TOP;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.widget.Toast;
 
 import com.example.laserchesstest.Pieces.Defender;
 import com.example.laserchesstest.Pieces.DoubleMirror;
@@ -34,8 +40,12 @@ import com.example.laserchesstest.Pieces.Mirror;
 import com.example.laserchesstest.Pieces.Piece;
 import com.example.laserchesstest.Pieces.ReservedCell;
 
-import java.sql.Time;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import Database.GameBoard;
+import Database.GameBoardDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     public Position[][] Board2 = new Position[8][10];
     public Position[][] Board3 = new Position[8][10];
     public GameBoard gameBoard = new GameBoard();
+    public GameBoardDatabase gameBoardDatabase;
     public Boolean AnythingSelected = false;
     public Coordinates lastPos = null;
     public Coordinates clickedPosition = new Coordinates(0, 0);
@@ -855,6 +866,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         } else if (viewId == R.id.save) {
             gameBoard.setBoard(Board);
+            addGameBoardInBackground(gameBoard);
         }
 
 
@@ -1487,12 +1499,71 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
+    public void addGameBoardInBackground(GameBoard gameBoard) {
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                gameBoardDatabase.getGameBoardDao().addGameBoard(gameBoard);
+
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "Added", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        int saveId = getIntent().getIntExtra("saveId", -1);
+        if(saveId == -1) {
+            Log.w("nah", String.valueOf(saveId));
+            Log.w("nah", String.valueOf(saveId));
+            Log.w("nah", String.valueOf(saveId));
+            Log.w("nah", String.valueOf(saveId));
+            initializeBoard();
+        } else {
+            Log.w("yes", String.valueOf(saveId));
+            Log.w("yes", String.valueOf(saveId));
+            Log.w("yes", String.valueOf(saveId));
+            Log.w("yes", String.valueOf(saveId));
+            Log.w("yes", String.valueOf(saveId));
+            initializeBoard();
+            getBoardInBackground(saveId);
+        }
+        RoomDatabase.Callback myCallBack = new RoomDatabase.Callback() {
+            @Override
+            public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                super.onCreate(db);
+            }
 
-        initializeBoard();
+            public void onOpen(@NonNull SupportSQLiteDatabase db) {
+                super.onOpen(db);
+            }
+        };
+
+        gameBoardDatabase = Room.databaseBuilder(getApplicationContext(), GameBoardDatabase.class, "GameBoardDB").addCallback(myCallBack).build();
+    }
+
+    private void getBoardInBackground(int id) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                gameBoard = gameBoardDatabase.getGameBoardDao().getGameBoardById(id);
+                Board = gameBoard.getBoard();
+                setBoard();
+            }
+        });
     }
 }

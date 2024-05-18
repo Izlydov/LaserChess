@@ -5,7 +5,6 @@ import com.example.laserchesstest.Pieces.King;
 
 import java.util.ArrayList;
 public class DoubleMirror extends Piece {
-    private int direction;
 
 
     public DoubleMirror(boolean white, int direction) {
@@ -124,14 +123,3 @@ public class DoubleMirror extends Piece {
         return allowedMoves;
     }
 }
-//            else{
-//                if(board[coordinates.getX()+1][coordinates.getY()+1].getPiece() instanceof Defender){
-//                    c = new Coordinates(coordinates.getX()+1 , coordinates.getY()+1);
-//                    allowedMoves.add(c);
-//                } else{
-//                    if (board[coordinates.getX()+1][coordinates.getY()+1].getPiece() instanceof Mirror) {
-//                        c = new Coordinates(coordinates.getX() + 1, coordinates.getY() + 1);
-//                        allowedMoves.add(c);
-//                    }
-//                }
-//            }

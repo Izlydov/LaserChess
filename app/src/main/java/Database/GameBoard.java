@@ -1,9 +1,13 @@
-package com.example.laserchesstest;
+package Database;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.example.laserchesstest.Position;
 
 @Entity(tableName = "game_board")
+@TypeConverters(Converters.class)
 public class GameBoard {
     @PrimaryKey(autoGenerate = true)
     private int id;

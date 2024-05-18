@@ -5,7 +5,6 @@ import com.example.laserchesstest.Position;
 
 import java.util.ArrayList;
 public class Mirror extends Piece {
-    private int direction;
 
     public Mirror(boolean white, int direction) {
         super(white, direction);

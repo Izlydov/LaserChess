@@ -6,7 +6,6 @@ import com.example.laserchesstest.Position;
 import java.util.ArrayList;
 
 public class King extends Piece{
-    private int direction;
 
 
     public King(boolean white, int direction) {
