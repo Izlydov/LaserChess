@@ -5,9 +5,10 @@ import com.example.laserchesstest.Position;
 
 import java.util.ArrayList;
 public class Defender extends Piece{
+    private String name = "Defender";
 
-    public Defender(boolean white, int direction) {
-        super(white, direction);
+    public Defender(boolean white, int direction, String name) {
+        super(white, direction, name);
     }
     @Override
     public ArrayList<Coordinates> AllowedMoves(Coordinates coordinates , Position[][] board) {

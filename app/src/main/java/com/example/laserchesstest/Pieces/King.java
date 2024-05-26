@@ -6,10 +6,9 @@ import com.example.laserchesstest.Position;
 import java.util.ArrayList;
 
 public class King extends Piece{
-
-
-    public King(boolean white, int direction) {
-        super(white, direction);
+    private String name = "King";
+    public King(boolean white, int direction, String name) {
+        super(white, direction, name);
     }
     @Override
     public ArrayList<Coordinates> AllowedMoves(Coordinates coordinates , Position[][] board) {

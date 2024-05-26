@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -35,6 +36,7 @@ public class SavesActivity extends AppCompatActivity implements SaveAdapter.OnIt
     public GameBoardDatabase gameBoardDatabase;
     public List<GameBoard> savedGames;
     String[] savedGamesTexts;
+    public int[] savedGamesIds;
     public int saves;
 
     @Override
@@ -55,27 +57,23 @@ public class SavesActivity extends AppCompatActivity implements SaveAdapter.OnIt
         gameBoardDatabase = Room.databaseBuilder(getApplicationContext(), GameBoardDatabase.class, "GameBoardDB").addCallback(myCallBack).build();
         playButton = findViewById(R.id.button_play);
         deleteButton = findViewById(R.id.button_delete);
-        saves = getIntent().getIntExtra("count", 5);
+        saves = getIntent().getIntExtra("count", 0);
         if(saves == 0){
             showAlertNoSaves();
         }
-
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        savedGamesIds = new int[saves];
         savedGamesTexts = new String[saves];
-        for(int i = 0; i < saves; i++){
-            savedGamesTexts[i] = "Save" + String.valueOf(i);
-        }
 
-        SaveAdapter adapter = new SaveAdapter(savedGamesTexts, this);
-        recyclerView.setAdapter(adapter);
+        setupRecyclerView();
+        getAllSavedGames();
+
 
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 intent = new Intent(SavesActivity.this, MainActivity.class);
-                intent.putExtra("saveId", lastPosition);
+                intent.putExtra("saveId", savedGamesIds[lastPosition]);
                 startActivity(intent);
             }
         });
@@ -109,6 +107,31 @@ public class SavesActivity extends AppCompatActivity implements SaveAdapter.OnIt
             }
         });
     }
+    private void getAllSavedGames() {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                savedGames = gameBoardDatabase.getGameBoardDao().getAllGameBoard();
+                savedGamesIds = new int[savedGames.size()];
+                savedGamesTexts = new String[savedGames.size()];
+
+                for (int i = 0; i < savedGames.size(); i++) {
+                    savedGamesIds[i] = savedGames.get(i).getId();
+                    savedGamesTexts[i] = "Сохранение " + (i + 1);
+                }
+
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        setupRecyclerView();
+                    }
+                });
+            }
+        });
+    }
 
     public void onItemClick(int position) {
         String selectedSave = "Вы выбрали: " + position;
@@ -125,5 +148,11 @@ public class SavesActivity extends AppCompatActivity implements SaveAdapter.OnIt
         View view = recyclerView.getChildAt(position);
         TextView textView = view.findViewById(R.id.saveTextView);
         textView.setTextColor(Color.BLACK);
+    }
+    private void setupRecyclerView(){
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        SaveAdapter adapter = new SaveAdapter(savedGamesTexts, this);
+        recyclerView.setAdapter(adapter);
     }
 }

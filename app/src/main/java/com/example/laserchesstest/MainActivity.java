@@ -54,7 +54,8 @@ public class MainActivity extends AppCompatActivity {
     public Position[][] Board = new Position[8][10];
     public Position[][] Board2 = new Position[8][10];
     public Position[][] Board3 = new Position[8][10];
-    public GameBoard gameBoard = new GameBoard();
+    public Position[][] BoardSave = new Position[8][10];
+    public GameBoard gameBoard;
     public GameBoardDatabase gameBoardDatabase;
     public Boolean AnythingSelected = false;
     public Coordinates lastPos = null;
@@ -74,8 +75,8 @@ public class MainActivity extends AppCompatActivity {
     int prevDirection;
 
 
-    Piece rLaser;
-    Piece wLaser;
+    Laser rLaser;
+    Laser wLaser;
     Piece rKing;
     Piece wKing;
 
@@ -158,40 +159,40 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeBoard() {
 
-        rLaser = new Laser(false, 180);
-        wLaser = new Laser(true, 0);
+        rLaser = new Laser(false, 180, "Laser");
+        wLaser = new Laser(true, 0, "Laser");
 
-        rKing = new King(false, 0);
-        wKing = new King(true, 0);
+        rKing = new King(false, 0, "King");
+        wKing = new King(true, 0, "King");
 
-        rDefender1 = new Defender(false, 180);
-        rDefender2 = new Defender(false, 180);
-        wDefender1 = new Defender(true, 0);
-        wDefender2 = new Defender(true, 0);
+        rDefender1 = new Defender(false, 180, "Defender");
+        rDefender2 = new Defender(false, 180, "Defender");
+        wDefender1 = new Defender(true, 0, "Defender");
+        wDefender2 = new Defender(true, 0, "Defender");
 
-        rDoubleMirror1 = new DoubleMirror(false, 0);
-        rDoubleMirror2 = new DoubleMirror(false, 90);
-        wDoubleMirror1 = new DoubleMirror(true, 90);
-        wDoubleMirror2 = new DoubleMirror(true, 0);
+        rDoubleMirror1 = new DoubleMirror(false, 0, "DoubleMirror");
+        rDoubleMirror2 = new DoubleMirror(false, 90, "DoubleMirror");
+        wDoubleMirror1 = new DoubleMirror(true, 90, "DoubleMirror");
+        wDoubleMirror2 = new DoubleMirror(true, 0, "DoubleMirror");
 
-        rMirror1 = new Mirror(false, 270);
-        rMirror2 = new Mirror(false, 0);
-        rMirror3 = new Mirror(false, 180);
-        rMirror4 = new Mirror(false, 270);
-        rMirror5 = new Mirror(false, 270);
-        rMirror6 = new Mirror(false, 180);
-        rMirror7 = new Mirror(false, 270);
+        rMirror1 = new Mirror(false, 270, "Mirror");
+        rMirror2 = new Mirror(false, 0, "Mirror");
+        rMirror3 = new Mirror(false, 180, "Mirror");
+        rMirror4 = new Mirror(false, 270, "Mirror");
+        rMirror5 = new Mirror(false, 270, "Mirror");
+        rMirror6 = new Mirror(false, 180, "Mirror");
+        rMirror7 = new Mirror(false, 270, "Mirror");
 
-        wMirror1 = new Mirror(true, 90);
-        wMirror2 = new Mirror(true, 0);
-        wMirror3 = new Mirror(true, 90);
-        wMirror4 = new Mirror(true, 90);
-        wMirror5 = new Mirror(true, 0);
-        wMirror6 = new Mirror(true, 180);
-        wMirror7 = new Mirror(true, 90);
+        wMirror1 = new Mirror(true, 90, "Mirror");
+        wMirror2 = new Mirror(true, 0, "Mirror");
+        wMirror3 = new Mirror(true, 90, "Mirror");
+        wMirror4 = new Mirror(true, 90, "Mirror");
+        wMirror5 = new Mirror(true, 0, "Mirror");
+        wMirror6 = new Mirror(true, 180, "Mirror");
+        wMirror7 = new Mirror(true, 90, "Mirror");
 
-        bReservedCell = new ReservedCell(true, 0);
-        rReservedCell = new ReservedCell(false, 0);
+        bReservedCell = new ReservedCell(true, 0, "Cell");
+        rReservedCell = new ReservedCell(false, 0, "Cell");
 
         red_Mirror_0 = ContextCompat.getDrawable(this, R.drawable.red_b);
         red_Mirror_90 = ContextCompat.getDrawable(this, R.drawable.red_b_90);
@@ -845,6 +846,9 @@ public class MainActivity extends AppCompatActivity {
         } else if (viewId == R.id.R79) {
             clickedPosition.setX(7);
             clickedPosition.setY(9);
+            String name = Board[7][9].getPiece().getName();
+            int x = Board[7][9].getPiece().getDirection();
+            Log.w("name", name);
         } else if (viewId == R.id.info) {
                 inflater = getLayoutInflater();
                 menuActivity.showAlert(MainActivity.this, inflater, "Правила", getResources().getString(R.string.rules));
@@ -865,6 +869,7 @@ public class MainActivity extends AppCompatActivity {
             setBoard();
             return;
         } else if (viewId == R.id.save) {
+            gameBoard = new GameBoard();
             gameBoard.setBoard(Board);
             addGameBoardInBackground(gameBoard);
         }
@@ -1103,8 +1108,12 @@ public class MainActivity extends AppCompatActivity {
     }
     private void startLaserAttack(Boolean FirstPlayerTurn){
         Log.w("LaserAttackStart", "Started");
-        if (FirstPlayerTurn){ laserAttack(wLaser.getDirection(), updateXY(wLaser.getDirection(), blueLaserCords)); }
-        if (!FirstPlayerTurn) { laserAttack(rLaser.getDirection(), updateXY(rLaser.getDirection(), redLaserCords)); }
+        if (FirstPlayerTurn){
+            int laserDirection = Board[blueLaserCords.getX()][blueLaserCords.getY()].getPiece().getDirection();
+            laserAttack(laserDirection, updateXY(laserDirection, blueLaserCords)); }
+        if (!FirstPlayerTurn) {
+            int laserDirection = Board[redLaserCords.getX()][redLaserCords.getY()].getPiece().getDirection();
+            laserAttack(laserDirection, updateXY(laserDirection, redLaserCords)); }
     }
 
     private void laserAttack(int laserDirection, Coordinates coordinates) {
@@ -1500,7 +1509,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addGameBoardInBackground(GameBoard gameBoard) {
-
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executorService.execute(new Runnable() {
@@ -1524,6 +1532,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        RoomDatabase.Callback myCallBack = new RoomDatabase.Callback() {
+            @Override
+            public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                super.onCreate(db);
+            }
+
+            public void onOpen(@NonNull SupportSQLiteDatabase db) {
+                super.onOpen(db);
+            }
+        };
+
+        gameBoardDatabase = Room.databaseBuilder(getApplicationContext(), GameBoardDatabase.class, "GameBoardDB")
+                .addCallback(myCallBack)
+                .build();
+
         int saveId = getIntent().getIntExtra("saveId", -1);
         if(saveId == -1) {
             Log.w("nah", String.valueOf(saveId));
@@ -1540,30 +1563,95 @@ public class MainActivity extends AppCompatActivity {
             initializeBoard();
             getBoardInBackground(saveId);
         }
-        RoomDatabase.Callback myCallBack = new RoomDatabase.Callback() {
-            @Override
-            public void onCreate(@NonNull SupportSQLiteDatabase db) {
-                super.onCreate(db);
-            }
-
-            public void onOpen(@NonNull SupportSQLiteDatabase db) {
-                super.onOpen(db);
-            }
-        };
-
-        gameBoardDatabase = Room.databaseBuilder(getApplicationContext(), GameBoardDatabase.class, "GameBoardDB").addCallback(myCallBack).build();
     }
 
+//    private void getBoardInBackground(int id) {
+//        ExecutorService executorService = Executors.newSingleThreadExecutor();
+//
+//        executorService.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                gameBoard = gameBoardDatabase.getGameBoardDao().getGameBoardById(id);
+//
+////                Board = gameBoard.getBoard();
+//                setBoard();
+//            }
+//        });
+//    }
     private void getBoardInBackground(int id) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
-
         executorService.execute(new Runnable() {
             @Override
             public void run() {
                 gameBoard = gameBoardDatabase.getGameBoardDao().getGameBoardById(id);
-                Board = gameBoard.getBoard();
-                setBoard();
+                if (gameBoard != null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            BoardSave = gameBoard.getBoard();
+                            setBoardSave(BoardSave);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.w("MainActivity", "GameBoard not found for ID: " + id);
+                        }
+                    });
+                }
             }
         });
     }
+    private void setBoardSave(Position[][] BoardSave){
+        for (int x = 0; x < 8; x++){
+            for(int y = 0; y < 10; y++){
+                Board[x][y].setPiece(null);
+                resetColorAtLastPosition(new Coordinates(x, y));
+            }
+        }
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 10; j++) {
+                if(BoardSave[i][j].getPiece() == null){
+                    Board[i][j].setPiece(null);
+                } else {
+                    String name = BoardSave[i][j].getPiece().getName();
+                    int direction = BoardSave[i][j].getPiece().getDirection();
+                    boolean white = BoardSave[i][j].getPiece().isWhite();
+                    Log.w("name", name);
+                    Piece p = null;
+                    switch (name){
+                        case "Laser":
+                            p = new Laser(white, direction, name);
+                            break;
+                        case "Mirror":
+                            p = new Mirror(white, direction, name);
+                            break;
+                        case "DoubleMirror":
+                            p = new DoubleMirror(white, direction, name);
+                            break;
+                        case "Defender":
+                            p = new Defender(white, direction, name);
+                            break;
+                        case "King":
+                            p = new King(white, direction, name);
+                            break;
+                        default:
+                            p = null;
+                            Log.w("error", "nullPiece");
+                    }
+                    Board[i][j].setPiece(p);
+                }
+            }
+        }
+        setBoard();
+    }
+
 }
+//if(Board[g][h].getPiece()==null){
+//        Board3[g][h].setPiece(null);
+//        if(Board2[g][h].getPiece() == null) {
+//        DisplayBoard[g][h].setBackground(blank_Cell);
+//        }
+//        }else{
+//        Board3[g][h].setPiece(Board[g][h].getPiece());

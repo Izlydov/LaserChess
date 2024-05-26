@@ -1,14 +1,13 @@
 package com.example.laserchesstest.Pieces;
 import com.example.laserchesstest.Coordinates;
 import com.example.laserchesstest.Position;
-import com.example.laserchesstest.Pieces.King;
 
 import java.util.ArrayList;
 public class DoubleMirror extends Piece {
 
-
-    public DoubleMirror(boolean white, int direction) {
-        super(white, direction);
+    private String name = "DoubleMirror";
+    public DoubleMirror(boolean white, int direction, String name) {
+        super(white, direction, name);
     }
 
     @Override

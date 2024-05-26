@@ -6,8 +6,9 @@ import com.example.laserchesstest.Position;
 import java.util.ArrayList;
 public class Mirror extends Piece {
 
-    public Mirror(boolean white, int direction) {
-        super(white, direction);
+    public Mirror(boolean white, int direction, String name) {
+        super(white, direction, name);
+        name = "Mirror";
     }
     @Override
     public ArrayList<Coordinates> AllowedMoves(Coordinates coordinates , Position[][] board) {
