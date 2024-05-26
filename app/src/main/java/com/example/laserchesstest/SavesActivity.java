@@ -33,6 +33,7 @@ public class SavesActivity extends AppCompatActivity implements SaveAdapter.OnIt
     Intent intent;
     RecyclerView recyclerView;
     private int lastPosition;
+    public boolean isEmptySaves;
     public GameBoardDatabase gameBoardDatabase;
     public List<GameBoard> savedGames;
     String[] savedGamesTexts;
@@ -60,6 +61,7 @@ public class SavesActivity extends AppCompatActivity implements SaveAdapter.OnIt
         saves = getIntent().getIntExtra("count", 0);
         if(saves == 0){
             showAlertNoSaves();
+            isEmptySaves = true;
         }
         savedGamesIds = new int[saves];
         savedGamesTexts = new String[saves];
@@ -73,14 +75,19 @@ public class SavesActivity extends AppCompatActivity implements SaveAdapter.OnIt
             @Override
             public void onClick(View v) {
                 intent = new Intent(SavesActivity.this, MainActivity.class);
-                intent.putExtra("saveId", savedGamesIds[lastPosition]);
-                startActivity(intent);
+                if(isEmptySaves == true){
+                    startActivity(intent);
+                } else {
+                    intent.putExtra("saveId", savedGamesIds[lastPosition]);
+                    startActivity(intent);
+                }
             }
         });
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 deleteAllSavesInBackground();
+                Toast.makeText(SavesActivity.this, "Сохранения удалены", Toast.LENGTH_SHORT).show();
             }
         });
     }

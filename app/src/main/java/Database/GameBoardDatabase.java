@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
 
-@Database(entities = {GameBoard.class}, version = 1)
+@Database(entities = {GameBoard.class}, version = 2)
 @TypeConverters({Converters.class})
 public abstract class GameBoardDatabase extends RoomDatabase{
     public abstract GameBoardDao getGameBoardDao();

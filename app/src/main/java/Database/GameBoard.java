@@ -14,6 +14,15 @@ public class GameBoard {
 
     private Position[][] board;
 
+    public boolean isPlayerTurn() {
+        return playerTurn;
+    }
+
+    public void setPlayerTurn(boolean playerTurn) {
+        this.playerTurn = playerTurn;
+    }
+
+    private boolean playerTurn;
     public GameBoard(){};
 
     public int getId() {

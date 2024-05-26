@@ -50,7 +50,8 @@ public class MenuActivity extends AppCompatActivity {
             }
         };
 
-        gameBoardDatabase = Room.databaseBuilder(getApplicationContext(), GameBoardDatabase.class, "GameBoardDB").addCallback(myCallBack).build();
+        gameBoardDatabase = Room.databaseBuilder(getApplicationContext(), GameBoardDatabase.class, "GameBoardDB")
+                .addCallback(myCallBack).build();
         getSavesCountInBackGround();
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
