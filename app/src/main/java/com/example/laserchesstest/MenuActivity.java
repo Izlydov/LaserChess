@@ -14,6 +14,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -24,10 +27,10 @@ import Database.GameBoardDatabase;
 
 public class MenuActivity extends AppCompatActivity {
     Button playButton, rulesButton, savesButton;
+    TextView quitButton;
     Intent intent;
     LayoutInflater inflater;
     int saves;
-
     GameBoardDatabase gameBoardDatabase;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +40,7 @@ public class MenuActivity extends AppCompatActivity {
         savesButton = findViewById(R.id.button_save);
         playButton = findViewById(R.id.button_play);
         rulesButton = findViewById(R.id.button_rules);
+        quitButton = findViewById(R.id.button_quit);
         inflater = getLayoutInflater();
 
         RoomDatabase.Callback myCallBack = new RoomDatabase.Callback() {
@@ -58,6 +62,12 @@ public class MenuActivity extends AppCompatActivity {
             public void onClick(View v) {
                 intent = new Intent(MenuActivity.this, MainActivity.class);
                 startActivity(intent);
+            }
+        });
+        quitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showQuitAlert(MenuActivity.this);
             }
         });
         rulesButton.setOnClickListener(new View.OnClickListener() {
@@ -92,6 +102,22 @@ public class MenuActivity extends AppCompatActivity {
                 .setNeutralButton("Фигуры", new DialogInterface.OnClickListener(){
                     public void onClick(DialogInterface dialog, int which) {
                         showAlertPieces(context, inflater, "Фигуры");
+                    }
+                })
+                .show();
+    }
+    public void showQuitAlert(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Вы уверены что хотите выйти?")
+                .setPositiveButton("Нет", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })
+                .setNegativeButton("Да", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finishAffinity();
                     }
                 })
                 .show();

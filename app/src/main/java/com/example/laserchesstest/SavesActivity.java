@@ -141,7 +141,7 @@ public class SavesActivity extends AppCompatActivity implements SaveAdapter.OnIt
     }
 
     public void onItemClick(int position) {
-        String selectedSave = "Вы выбрали: " + position;
+        String selectedSave = "Вы выбрали: " + (position+1);
         Toast.makeText(this, selectedSave, Toast.LENGTH_SHORT).show();
         resetSelectedColor(lastPosition);
 
