@@ -747,6 +747,7 @@
         android:layout_height="60dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="140dp"
+        android:background="@drawable/rotateleftsolid"
         android:clickable="true"
         android:elevation="1dp"
         android:longClickable="false"
@@ -758,11 +759,24 @@
 
     <TextView
         android:id="@+id/save"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="16dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="76dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/icon_save"
+        android:clickable="true"
+        android:longClickable="false"
+        android:onClick="onClick"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/back"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/iconback"
         android:clickable="true"
         android:elevation="1dp"
         android:longClickable="false"
@@ -777,7 +791,7 @@
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="140dp"
         android:clickable="true"
-
+        android:background="@drawable/rotaterightsolid"
         android:longClickable="false"
         android:onClick="onClick"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -813,40 +827,19 @@
         app:srcCompat="@drawable/backward_step_solid" />
 
     <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="61dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="140dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/rotateleftsolid" />
-
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="61dp"
-        android:layout_height="59dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="140dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/rotaterightsolid" />
-
-    <ImageView
         android:id="@+id/info"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         android:longClickable="false"
         android:onClick="onClick"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.994"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.006"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/info" />
 
 

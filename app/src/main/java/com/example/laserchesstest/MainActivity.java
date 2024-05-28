@@ -871,6 +871,8 @@ public class MainActivity extends AppCompatActivity {
             gameBoard.setBoard(Board);
             gameBoard.setPlayerTurn(FirstPlayerTurn);
             addGameBoardInBackground(gameBoard);
+        } else if (viewId == R.id.back) {
+            showBackAlert(this);
         }
 
         resetLaserWay();
@@ -1504,6 +1506,24 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent = getIntent();
                         finish();
                         startActivity(intent);
+                    }
+                })
+                .show();
+    }
+    public void showBackAlert(Context context){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Система")
+                .setMessage("Не забудьте сохранить недоигранную партию")
+                .setNeutralButton("В меню", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        Intent i = new Intent(MainActivity.this, MenuActivity.class);
+                        startActivity(i);
+                    }
+                })
+                .setPositiveButton("Назад", new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
                     }
                 })
                 .show();
