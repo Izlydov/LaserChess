@@ -88,6 +88,7 @@ public class SavesActivity extends AppCompatActivity implements SaveAdapter.OnIt
             public void onClick(View v) {
                 deleteAllSavesInBackground();
                 Toast.makeText(SavesActivity.this, "Сохранения удалены", Toast.LENGTH_SHORT).show();
+                isEmptySaves = true;
             }
         });
     }
