@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     public ArrayList<Position[][]> LastMoves = new ArrayList<>();
     public ArrayList<Object[]> LaserWay = new ArrayList<>();
     public ArrayList<Coordinates> LaserWayReset = new ArrayList<>();
+    public boolean isGameOver;
     MenuActivity menuActivity = new MenuActivity();
     LayoutInflater inflater;
 
@@ -874,7 +875,10 @@ public class MainActivity extends AppCompatActivity {
         } else if (viewId == R.id.back) {
             showBackAlert(this);
         }
-
+        if(isGameOver){
+            gameover();
+            return;
+        }
         resetLaserWay();
         if (!AnythingSelected) {
             if (Board[clickedPosition.getX()][clickedPosition.getY()].getPiece() == null) {
@@ -1491,6 +1495,7 @@ public class MainActivity extends AppCompatActivity {
         return NULL;
     }
     public void showGameOverAlert(Context context, String title, String message) {
+        isGameOver = true;
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(title)
                 .setMessage(message)

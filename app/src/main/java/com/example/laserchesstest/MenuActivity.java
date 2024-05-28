@@ -79,6 +79,7 @@ public class MenuActivity extends AppCompatActivity {
         savesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getSavesCountInBackGround();
                 intent = new Intent(MenuActivity.this, SavesActivity.class);
                 intent.putExtra("count", saves);
                 startActivity(intent);
