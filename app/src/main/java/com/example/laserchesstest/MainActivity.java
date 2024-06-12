@@ -10,11 +10,13 @@ import static com.example.laserchesstest.CellResult.RIGHT;
 import static com.example.laserchesstest.CellResult.STOP;
 import static com.example.laserchesstest.CellResult.TOP;
 
+import static Database.Converters.fromPositionArray;
+import static Database.Converters.toPositionArray;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
@@ -27,6 +29,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -39,13 +42,22 @@ import com.example.laserchesstest.Pieces.Laser;
 import com.example.laserchesstest.Pieces.Mirror;
 import com.example.laserchesstest.Pieces.Piece;
 import com.example.laserchesstest.Pieces.ReservedCell;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import Database.GameBoard;
 import Database.GameBoardDatabase;
+import Database.RoomCodeGenerator;
+import network.ApiClient;
+import network.ApiService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,17 +68,25 @@ public class MainActivity extends AppCompatActivity {
     public Position[][] Board3 = new Position[8][10];
     public Position[][] BoardSave = new Position[8][10];
     public GameBoard gameBoard;
+    ApiService apiService;
     public GameBoardDatabase gameBoardDatabase;
     public Boolean AnythingSelected = false;
     public Coordinates lastPos = null;
     public Coordinates clickedPosition = new Coordinates(0, 0);
     public Coordinates blueLaserCords = new Coordinates(7, 9);
     public Coordinates redLaserCords = new Coordinates(0, 0);
-    public TextView[][] DisplayBoard = new TextView[8][10];
+    public ImageButton[][] DisplayBoard = new ImageButton[8][10];
     public ArrayList<Position[][]> LastMoves = new ArrayList<>();
     public ArrayList<Object[]> LaserWay = new ArrayList<>();
     public ArrayList<Coordinates> LaserWayReset = new ArrayList<>();
     public boolean isGameOver;
+    public boolean isGameOnline;
+    private Room currentRoom;
+    private String roomCode;
+    private String bluePlayer;
+    private String redPlayer;
+    private boolean isBlue;
+
     MenuActivity menuActivity = new MenuActivity();
     LayoutInflater inflater;
 
@@ -156,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
     Drawable laser_LeftBottom;
     Drawable laser_RightTop;
     Drawable laser_RightBottom;
+    private String playerName;
 
     private void initializeBoard() {
 
@@ -605,6 +626,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClick(View v) {
+        if (isGameOnline) {
+            if (isBlue != FirstPlayerTurn) {
+                return; // Ожидаем хода другого игрока
+            }
+        }
+        resetLaserWay();
         int viewId = v.getId();
 
         if (viewId == R.id.R00) {
@@ -846,7 +873,6 @@ public class MainActivity extends AppCompatActivity {
         } else if (viewId == R.id.R79) {
             clickedPosition.setX(7);
             clickedPosition.setY(9);
-            String name = Board[7][9].getPiece().getName();
         } else if (viewId == R.id.info) {
                 inflater = getLayoutInflater();
                 menuActivity.showAlert(MainActivity.this, inflater, "Правила", getResources().getString(R.string.rules));
@@ -879,9 +905,9 @@ public class MainActivity extends AppCompatActivity {
             gameover();
             return;
         }
-        resetLaserWay();
         if (!AnythingSelected) {
             if (Board[clickedPosition.getX()][clickedPosition.getY()].getPiece() == null) {
+                setBoard();
                 return;
             } else { // если фигура есть на clickedPosition
                 if (Board[clickedPosition.getX()][clickedPosition.getY()].getPiece().isWhite() != FirstPlayerTurn) { // если она ne соответствует ходу
@@ -907,6 +933,9 @@ public class MainActivity extends AppCompatActivity {
                     DisplayBoard[lastPos.getX()][lastPos.getY()].setBackground(blank_Cell);
                     resetColorAtLastPosition(lastPos);
                     AnythingSelected = false;
+                    if (isGameOnline) {
+                        sendMessage();
+                    }
 
                 } else { // если куда мы кликнули неразрешено то сбрасываем до 1 клика
                     resetColorAtLastPosition(lastPos);
@@ -931,6 +960,9 @@ public class MainActivity extends AppCompatActivity {
                             DisplayBoard[lastPos.getX()][lastPos.getY()].setBackground(blank_Cell);
                             resetColorAtLastPosition(lastPos);
                             AnythingSelected = false;
+                            if (isGameOnline) {
+                                sendMessage();
+                            }
                         }
                     } else {
                         AnythingSelected = false;
@@ -949,7 +981,6 @@ public class MainActivity extends AppCompatActivity {
         }
         lastPos = new Coordinates(clickedPosition.getX(), clickedPosition.getY());
         setBoard();
-//        resetLaserWay();
     }
 
     private void resetColorAtAllowedPosition(ArrayList<Coordinates> listOfCoordinates) {
@@ -1142,7 +1173,6 @@ public class MainActivity extends AppCompatActivity {
                 prevDirection = laserDirection;
                 addCell(KILL, coordinates, laserDirection, prevDirection);
                 Board[coordinates.getX()][coordinates.getY()].setPiece(null);
-//                DisplayBoard[coordinates.getX()][coordinates.getY()].setBackground(blank_Cell);
                 resetColorAtLastPosition(coordinates);
                 drawLaserWay();
                 break;
@@ -1569,7 +1599,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        gameBoardDatabase = Room.databaseBuilder(getApplicationContext(), GameBoardDatabase.class, "GameBoardDB")
+        gameBoardDatabase = androidx.room.Room.databaseBuilder(getApplicationContext(), GameBoardDatabase.class, "GameBoardDB")
                 .addCallback(myCallBack)
                 .build();
 
@@ -1579,6 +1609,36 @@ public class MainActivity extends AppCompatActivity {
         } else {
             initializeBoard();
             getBoardInBackground(saveId);
+        }
+
+        apiService = ApiClient.getApiService();
+        isGameOnline = getIntent().getBooleanExtra("isGameOnline", false);
+        if(isGameOnline){
+            startMessageFetching();
+            roomCode = getIntent().getStringExtra("roomCode");
+            isBlue = getIntent().getBooleanExtra("isPlayer1", false);
+            getRoomByRoomCode(roomCode, new RoomCallback() {
+                @Override
+                public void onSuccess(Room room) {
+                    currentRoom = room;
+                    if (isBlue) {
+                        bluePlayer = currentRoom.getPlayer1();
+                        redPlayer = currentRoom.getPlayer2();
+                        playerName = bluePlayer;
+                    } else {
+                        bluePlayer = currentRoom.getPlayer2();
+                        redPlayer = currentRoom.getPlayer1();
+                        playerName = redPlayer;
+                        FirstPlayerTurn = false;
+                    }
+                    Log.d("MainActivity", "Room found: " + currentRoom.getRoomCode());
+                    Log.d("MainActivity", "bluePlayer: " + currentRoom.getPlayer1());
+                }
+                @Override
+                public void onError(String errorMessage) {
+                    Log.e("MainActivity", errorMessage);
+                }
+            });
         }
     }
 
@@ -1608,48 +1668,141 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void setBoardSave(Position[][] BoardSave){
-        for (int x = 0; x < 8; x++){
-            for(int y = 0; y < 10; y++){
-                Board[x][y].setPiece(null);
-                resetColorAtLastPosition(new Coordinates(x, y));
-            }
-        }
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 10; j++) {
-                if(BoardSave[i][j].getPiece() == null){
-                    Board[i][j].setPiece(null);
-                } else {
-                    String name = BoardSave[i][j].getPiece().getName();
-                    int direction = BoardSave[i][j].getPiece().getDirection();
-                    boolean white = BoardSave[i][j].getPiece().isWhite();
-                    Log.w("name", name);
-                    Piece p = null;
-                    switch (name){
-                        case "Laser":
-                            p = new Laser(white, direction, name);
-                            break;
-                        case "Mirror":
-                            p = new Mirror(white, direction, name);
-                            break;
-                        case "DoubleMirror":
-                            p = new DoubleMirror(white, direction, name);
-                            break;
-                        case "Defender":
-                            p = new Defender(white, direction, name);
-                            break;
-                        case "King":
-                            p = new King(white, direction, name);
-                            break;
-                        default:
-                            p = null;
-                            Log.w("MainActivity", "nullPiece");
-                    }
-                    Board[i][j].setPiece(p);
+
+    private void startMessageFetching() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(5000); // Проверка каждые 5 секунд
+                    fetchMessages();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
+        }).start();
+    }
+    private void fetchMessages() {
+        apiService.getLastMessageByRoomCode(roomCode).enqueue(new Callback<Message>() {
+            @Override
+            public void onResponse(Call<Message> call, Response<Message> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Message message = response.body();
+                    Log.w("mainActivity", String.valueOf(message.getId()));
+                    if(response.body().getSender() != playerName) {
+                        handleReceivedMessage(response.body());
+                    }
+                } else {
+                    Log.e("MainActivity", "Error fetching last message: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Message> call, Throwable t) {
+                Log.e("MainActivity", "Error fetching last message", t);
+            }
+        });
+    }
+    private void sendMessage() {
+        Message message = new Message();
+        message.setRoom(currentRoom);
+        message.setSender(playerName);
+        message.setContent(String.valueOf(numberOfMoves));
+        message.setPositions(fromPositionArray(Board));
+        Log.d("MainActivity", "Message sent + " + message.getSender());
+
+        apiService.sendMessage(message).enqueue(new Callback<Message>() {
+            @Override
+            public void onResponse(Call<Message> call, Response<Message> response) {
+                if (!response.isSuccessful()) {
+                    Log.e("MainActivity", "Error sending message: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Message> call, Throwable t) {
+                Log.e("MainActivity", "Error sending message", t);
+            }
+        });
+    }
+    private void handleReceivedMessage(Message message) {
+        if(message.getContent().equals("StartMessage")){
+            Log.w("mainActivity", "got start message" + message.getId());
+            return;
         }
-        setBoard();
+        if (!message.getSender().equals(playerName)) {
+            Position[][] receivedBoard = toPositionArray(message.getPositions());
+            Log.w("mainActivity", "got board");
+            runOnUiThread(() -> {
+                setBoardSave(receivedBoard);
+                FirstPlayerTurn = !FirstPlayerTurn;
+            });
+        }
+    }
+    private void getRoomByRoomCode(String roomCode, RoomCallback callback) {
+        apiService.getRoomByCode(roomCode).enqueue(new Callback<Room>() {
+            @Override
+            public void onResponse(Call<Room> call, Response<Room> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Error getting room: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Room> call, Throwable t) {
+                callback.onError("Error getting room: " + t.getMessage());
+            }
+        });
+    }
+
+
+    private void setBoardSave(Position[][] BoardSave){
+        if(BoardSave != null) {
+            for (int x = 0; x < 8; x++) {
+                for (int y = 0; y < 10; y++) {
+                    Board[x][y].setPiece(null);
+                    resetColorAtLastPosition(new Coordinates(x, y));
+                }
+            }
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 10; j++) {
+                    if (BoardSave[i][j].getPiece() == null) {
+                        Board[i][j].setPiece(null);
+                    } else {
+                        String name = BoardSave[i][j].getPiece().getName();
+                        int direction = BoardSave[i][j].getPiece().getDirection();
+                        boolean white = BoardSave[i][j].getPiece().isWhite();
+                        Log.w("name", name);
+                        Piece p = null;
+                        switch (name) {
+                            case "Laser":
+                                p = new Laser(white, direction, name);
+                                break;
+                            case "Mirror":
+                                p = new Mirror(white, direction, name);
+                                break;
+                            case "DoubleMirror":
+                                p = new DoubleMirror(white, direction, name);
+                                break;
+                            case "Defender":
+                                p = new Defender(white, direction, name);
+                                break;
+                            case "King":
+                                p = new King(white, direction, name);
+                                break;
+                            default:
+                                p = null;
+                                Log.w("MainActivity", "nullPiece");
+                        }
+                        Board[i][j].setPiece(p);
+                    }
+                }
+            }
+            setBoard();
+        } else {
+            Log.e("MainActivity", "Received board is null");
+        }
     }
 
 }

@@ -26,7 +26,7 @@ import Database.GameBoard;
 import Database.GameBoardDatabase;
 
 public class MenuActivity extends AppCompatActivity {
-    Button playButton, rulesButton, savesButton;
+    Button playButton, rulesButton, savesButton, onlineButton;
     TextView quitButton;
     Intent intent;
     LayoutInflater inflater;
@@ -41,6 +41,7 @@ public class MenuActivity extends AppCompatActivity {
         playButton = findViewById(R.id.button_play);
         rulesButton = findViewById(R.id.button_rules);
         quitButton = findViewById(R.id.button_quit);
+        onlineButton = findViewById(R.id.button_online);
         inflater = getLayoutInflater();
 
         RoomDatabase.Callback myCallBack = new RoomDatabase.Callback() {
@@ -61,6 +62,13 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 intent = new Intent(MenuActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+        onlineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent = new Intent(MenuActivity.this, LobbyActivity.class);
                 startActivity(intent);
             }
         });

@@ -12,7 +12,6 @@ public class Position {
 
     public Piece getPiece() {
         return piece;
-
     }
 
     void setPiece(Piece piece) {
