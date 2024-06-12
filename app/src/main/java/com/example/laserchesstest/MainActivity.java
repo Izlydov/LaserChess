@@ -177,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
     Drawable laser_RightTop;
     Drawable laser_RightBottom;
     private String playerName;
+    private Long lastProcessedMessageId;
 
     private void initializeBoard() {
 
@@ -626,13 +627,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClick(View v) {
+        resetLaserWay();
+        setBoard();
+        int viewId = v.getId();
+        if (viewId == R.id.back) {
+            if(isGameOnline) {
+                showBackAlert(this, "Вы не сможете вернутся назад");
+            } else{
+                showBackAlert(this, "Не забудьте сохранить недоигранную партию");
+            }
+
+        } else if (viewId == R.id.info) {
+            inflater = getLayoutInflater();
+            menuActivity.showAlert(MainActivity.this, inflater, "Правила", getResources().getString(R.string.rules));
+        }
         if (isGameOnline) {
             if (isBlue != FirstPlayerTurn) {
                 return; // Ожидаем хода другого игрока
             }
         }
-        resetLaserWay();
-        int viewId = v.getId();
 
         if (viewId == R.id.R00) {
             clickedPosition = new Coordinates(0, 0);
@@ -873,9 +886,6 @@ public class MainActivity extends AppCompatActivity {
         } else if (viewId == R.id.R79) {
             clickedPosition.setX(7);
             clickedPosition.setY(9);
-        } else if (viewId == R.id.info) {
-                inflater = getLayoutInflater();
-                menuActivity.showAlert(MainActivity.this, inflater, "Правила", getResources().getString(R.string.rules));
         } else if (viewId == R.id.rotate_left) {
             rotatePieceLeft(Board[clickedPosition.getX()][clickedPosition.getY()].getPiece());
             Log.w("myAppLeft", "rotated");
@@ -898,8 +908,6 @@ public class MainActivity extends AppCompatActivity {
             gameBoard.setBoard(Board);
             gameBoard.setPlayerTurn(FirstPlayerTurn);
             addGameBoardInBackground(gameBoard);
-        } else if (viewId == R.id.back) {
-            showBackAlert(this);
         }
         if(isGameOver){
             gameover();
@@ -1338,8 +1346,8 @@ public class MainActivity extends AppCompatActivity {
                                     DisplayBoard[coordinates.getX()][coordinates.getY()].setBackground(layerDrawable);
                                     break;
                             }
-                            String s = "Result: " + result + ", Coordinates: (" + coordinates.getX() + ", " + coordinates.getY() + ")" + ", laserDirection = " + laserDirection;
-                            Log.w("draw", s);
+//                            String s = "Result: " + result + ", Coordinates: (" + coordinates.getX() + ", " + coordinates.getY() + ")" + ", laserDirection = " + laserDirection;
+//                            Log.w("draw", s);
                         }
                     },  10);
                 }
@@ -1545,10 +1553,10 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .show();
     }
-    public void showBackAlert(Context context){
+    public void showBackAlert(Context context, String text){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Система")
-                .setMessage("Не забудьте сохранить недоигранную партию")
+                .setMessage(text)
                 .setNeutralButton("В меню", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
@@ -1621,18 +1629,15 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(Room room) {
                     currentRoom = room;
+                    bluePlayer = currentRoom.getPlayer1();
+                    redPlayer = currentRoom.getPlayer2();
                     if (isBlue) {
-                        bluePlayer = currentRoom.getPlayer1();
-                        redPlayer = currentRoom.getPlayer2();
                         playerName = bluePlayer;
                     } else {
-                        bluePlayer = currentRoom.getPlayer2();
-                        redPlayer = currentRoom.getPlayer1();
                         playerName = redPlayer;
-                        FirstPlayerTurn = false;
                     }
                     Log.d("MainActivity", "Room found: " + currentRoom.getRoomCode());
-                    Log.d("MainActivity", "bluePlayer: " + currentRoom.getPlayer1());
+                    Log.d("MainActivity", "playerName: " + playerName);
                 }
                 @Override
                 public void onError(String errorMessage) {
@@ -1673,7 +1678,7 @@ public class MainActivity extends AppCompatActivity {
         new Thread(() -> {
             while (true) {
                 try {
-                    Thread.sleep(5000); // Проверка каждые 5 секунд
+                    Thread.sleep(2000); // Проверка каждые 2 секунды
                     fetchMessages();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -1687,10 +1692,17 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<Message> call, Response<Message> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Message message = response.body();
-                    Log.w("mainActivity", String.valueOf(message.getId()));
-                    if(response.body().getSender() != playerName) {
-                        handleReceivedMessage(response.body());
-                    }
+
+                    if (!message.getId().equals(lastProcessedMessageId)) {
+                        lastProcessedMessageId = message.getId();
+                        if(response.body().getSender() != playerName) {
+                            handleReceivedMessage(response.body());
+                        } else {
+                            Log.w("mainActivity", "Ignoring own message: " + message.getId());
+                        }
+                    } else {
+                    Log.w("mainActivity", "Ignoring checked message: " + message.getId());
+                }
                 } else {
                     Log.e("MainActivity", "Error fetching last message: " + response.message());
                 }
@@ -1773,7 +1785,6 @@ public class MainActivity extends AppCompatActivity {
                         String name = BoardSave[i][j].getPiece().getName();
                         int direction = BoardSave[i][j].getPiece().getDirection();
                         boolean white = BoardSave[i][j].getPiece().isWhite();
-                        Log.w("name", name);
                         Piece p = null;
                         switch (name) {
                             case "Laser":
@@ -1799,6 +1810,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
+            Log.w("setBoardSave", "Setted");
             setBoard();
         } else {
             Log.e("MainActivity", "Received board is null");
