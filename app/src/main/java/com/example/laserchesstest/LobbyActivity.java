@@ -98,6 +98,7 @@ public class LobbyActivity extends AppCompatActivity {
                     Intent intent = new Intent(LobbyActivity.this, RoomActivity.class);
                     intent.putExtra("roomCode", roomCode);
                     intent.putExtra("playerName", playerName);
+                    intent.putExtra("isFirst", true);
                     startActivity(intent);
                 } else {
                     Toast.makeText(LobbyActivity.this, "Error creating room: " + response.message(), Toast.LENGTH_SHORT).show();
@@ -126,6 +127,7 @@ public class LobbyActivity extends AppCompatActivity {
                                     Intent intent = new Intent(LobbyActivity.this, RoomActivity.class);
                                     intent.putExtra("roomCode", roomCode);
                                     intent.putExtra("playerName", playerName);
+                                    intent.putExtra("isFirst", false);
                                     startActivity(intent);
                                 } else {
                                     Toast.makeText(LobbyActivity.this, "Error joining room: " + response.message(), Toast.LENGTH_SHORT).show();

@@ -29,6 +29,8 @@ public class RoomActivity extends AppCompatActivity {
     private EditText messageInput;
     private TextView messagesView;
     private boolean isActive;
+    private boolean gameStarted = false;
+    private boolean isBlue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,7 @@ public class RoomActivity extends AppCompatActivity {
 
         roomCode = getIntent().getStringExtra("roomCode");
         playerName = getIntent().getStringExtra("playerName");
+        isBlue = getIntent().getBooleanExtra("isFirst", false);
 
         sendButton = findViewById(R.id.button_send);
         messageInput = findViewById(R.id.edit_message);
@@ -185,17 +188,25 @@ public class RoomActivity extends AppCompatActivity {
 
 
     private void startGame() {
-        Toast.makeText(this, "Оба игрока подключены! Загрузка игры...", Toast.LENGTH_SHORT).show();
-        Message message = new Message();
-        message.setSender("System");
-        message.setRoom(currentRoom);
-        message.setContent("StartMessage");
-        sendMessage(message);
-        Intent intent = new Intent(RoomActivity.this, MainActivity.class);
-        intent.putExtra("roomCode", roomCode);
-        intent.putExtra("isGameOnline", true);
-        intent.putExtra("isPlayer1", playerName.equals(currentRoom.getPlayer1()));
-        startActivity(intent);
-        isActive = false;
+        if (!gameStarted) {
+            if(currentRoom.getPlayer1().equals(currentRoom.getPlayer2())){
+                currentRoom.setPlayer1(currentRoom.getPlayer1() + " (Player 1)");
+                playerName = currentRoom.getPlayer1();
+                currentRoom.setPlayer2(currentRoom.getPlayer2() + " (Player 2)");
+            }
+            gameStarted = true;
+            Toast.makeText(this, "Оба игрока подключены! Загрузка игры...", Toast.LENGTH_SHORT).show();
+            Message message = new Message();
+            message.setSender("System");
+            message.setRoom(currentRoom);
+            message.setContent("StartMessage");
+            sendMessage(message);
+            Intent intent = new Intent(RoomActivity.this, MainActivity.class);
+            intent.putExtra("roomCode", roomCode);
+            intent.putExtra("isGameOnline", true);
+            intent.putExtra("isPlayer1", isBlue);
+            startActivity(intent);
+            isActive = false;
+        }
     }
 }

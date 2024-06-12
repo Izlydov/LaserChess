@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -627,6 +628,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClick(View v) {
+
         resetLaserWay();
         setBoard();
         int viewId = v.getId();
@@ -637,9 +639,14 @@ public class MainActivity extends AppCompatActivity {
                 showBackAlert(this, "Не забудьте сохранить недоигранную партию");
             }
 
+
         } else if (viewId == R.id.info) {
             inflater = getLayoutInflater();
             menuActivity.showAlert(MainActivity.this, inflater, "Правила", getResources().getString(R.string.rules));
+        }
+        if(isGameOver){
+            gameover();
+            return;
         }
         if (isGameOnline) {
             if (isBlue != FirstPlayerTurn) {
@@ -890,11 +897,17 @@ public class MainActivity extends AppCompatActivity {
             rotatePieceLeft(Board[clickedPosition.getX()][clickedPosition.getY()].getPiece());
             Log.w("myAppLeft", "rotated");
             resetLaserWay();
+            if(isGameOnline){
+                sendMessage();
+            }
             return;
         } else if (viewId == R.id.rotate_right) {
             rotatePieceRight(Board[clickedPosition.getX()][clickedPosition.getY()].getPiece());
             Log.w("myAppRight", "rotated");
             resetLaserWay();
+            if(isGameOnline){
+                sendMessage();
+            }
             return;
         } else if (viewId == R.id.undo) {
             AnythingSelected = false;
@@ -908,10 +921,6 @@ public class MainActivity extends AppCompatActivity {
             gameBoard.setBoard(Board);
             gameBoard.setPlayerTurn(FirstPlayerTurn);
             addGameBoardInBackground(gameBoard);
-        }
-        if(isGameOver){
-            gameover();
-            return;
         }
         if (!AnythingSelected) {
             if (Board[clickedPosition.getX()][clickedPosition.getY()].getPiece() == null) {
@@ -1221,6 +1230,9 @@ public class MainActivity extends AppCompatActivity {
                 Board[coordinates.getX()][coordinates.getY()].setPiece(null);
                 drawLaserWay();
                 gameover();
+                if(isGameOnline){
+                    sendMessage();
+                }
                 return;
             case NOTHING:
                 prevDirection = laserDirection;
@@ -1622,6 +1634,12 @@ public class MainActivity extends AppCompatActivity {
         apiService = ApiClient.getApiService();
         isGameOnline = getIntent().getBooleanExtra("isGameOnline", false);
         if(isGameOnline){
+            TextView localSave = findViewById(R.id.save);
+            ImageView undo = findViewById(R.id.undo);
+            undo.setClickable(false);
+            undo.setImageResource(0);
+            localSave.setClickable(false);
+            localSave.setBackground(null);
             startMessageFetching();
             roomCode = getIntent().getStringExtra("roomCode");
             isBlue = getIntent().getBooleanExtra("isPlayer1", false);
@@ -1637,7 +1655,8 @@ public class MainActivity extends AppCompatActivity {
                         playerName = redPlayer;
                     }
                     Log.d("MainActivity", "Room found: " + currentRoom.getRoomCode());
-                    Log.d("MainActivity", "playerName: " + playerName);
+                    Log.d("MainActivity", "Blue: " + currentRoom.getPlayer1());
+                    Log.d("MainActivity", "Red: " + currentRoom.getPlayer2());
                 }
                 @Override
                 public void onError(String errorMessage) {
@@ -1692,7 +1711,6 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<Message> call, Response<Message> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Message message = response.body();
-
                     if (!message.getId().equals(lastProcessedMessageId)) {
                         lastProcessedMessageId = message.getId();
                         if(response.body().getSender() != playerName) {
@@ -1718,7 +1736,10 @@ public class MainActivity extends AppCompatActivity {
         Message message = new Message();
         message.setRoom(currentRoom);
         message.setSender(playerName);
-        message.setContent(String.valueOf(numberOfMoves));
+        message.setContent("");
+        if(isGameOver){
+            message.setContent("gameOver");
+        }
         message.setPositions(fromPositionArray(Board));
         Log.d("MainActivity", "Message sent + " + message.getSender());
 
@@ -1742,6 +1763,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         if (!message.getSender().equals(playerName)) {
+            if(message.getContent().equals("gameOver")) {
+                gameover();
+                isGameOver = true;
+            }
             Position[][] receivedBoard = toPositionArray(message.getPositions());
             Log.w("mainActivity", "got board");
             runOnUiThread(() -> {
