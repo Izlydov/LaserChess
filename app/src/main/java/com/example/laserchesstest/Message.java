@@ -26,20 +26,12 @@ public class Message implements Serializable {
 
     @SerializedName("positions")
     private String positions;
+    private String laserWay;
 
 
 
     public Message() {
     }
-
-    public Message(Room room, Long id, String sender, String content, String positions) {
-        this.room = room;
-        this.id = id;
-        this.sender = sender;
-        this.content = content;
-        this.positions = positions;
-    }
-
     public Long getId() {
         return id;
     }
@@ -65,6 +57,13 @@ public class Message implements Serializable {
     }
     public Room getRoom() {
         return room;
+    }
+    public String getLaserWay() {
+        return laserWay;
+    }
+
+    public void setLaserWay(String laserWay) {
+        this.laserWay = laserWay;
     }
 
     public void setRoom(Room room) {

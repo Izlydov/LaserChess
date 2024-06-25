@@ -12,6 +12,8 @@ import static com.example.laserchesstest.CellResult.TOP;
 
 import static Database.Converters.fromPositionArray;
 import static Database.Converters.toPositionArray;
+import static Database.LaserWayConverter.fromLaserWay;
+import static Database.LaserWayConverter.toLaserWay;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -179,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
     Drawable laser_RightBottom;
     private String playerName;
     private Long lastProcessedMessageId;
+    private String LaserWayJson;
 
     private void initializeBoard() {
 
@@ -1110,9 +1113,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void gameover() {
-        String result = "Победа синих";
+        String result;
         if(FirstPlayerTurn){
             result = "Победа красных";
+        } else {
+            result = "Победа синих";
         }
         showGameOverAlert(this, "Игра окончена", result);
     }
@@ -1363,6 +1368,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     },  10);
                 }
+                LaserWayJson = fromLaserWay(LaserWay);
                 LaserWay.clear();
             }
 
@@ -1737,6 +1743,7 @@ public class MainActivity extends AppCompatActivity {
         message.setRoom(currentRoom);
         message.setSender(playerName);
         message.setContent("");
+        message.setLaserWay(LaserWayJson);
         if(isGameOver){
             message.setContent("gameOver");
         }
@@ -1768,9 +1775,11 @@ public class MainActivity extends AppCompatActivity {
                 isGameOver = true;
             }
             Position[][] receivedBoard = toPositionArray(message.getPositions());
+            LaserWay = toLaserWay(message.getLaserWay());
             Log.w("mainActivity", "got board");
             runOnUiThread(() -> {
                 setBoardSave(receivedBoard);
+                drawLaserWay();
                 FirstPlayerTurn = !FirstPlayerTurn;
             });
         }

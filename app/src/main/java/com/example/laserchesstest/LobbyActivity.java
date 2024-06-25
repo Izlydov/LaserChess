@@ -29,8 +29,8 @@ public class LobbyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
         makeRoomButton = findViewById(R.id.button_join);
-        deleteAllMessagesButton = findViewById(R.id.button_delete_messages);
-        deleteAllRoomsButton = findViewById(R.id.button_delete_rooms);
+//        deleteAllMessagesButton = findViewById(R.id.button_delete_messages);
+//        deleteAllRoomsButton = findViewById(R.id.button_delete_rooms);
         joinRoomButton = findViewById(R.id.button_make);
         editRoomCode = findViewById(R.id.edit_code);
         editPlayerName = findViewById(R.id.edit_playerName);
@@ -53,38 +53,38 @@ public class LobbyActivity extends AppCompatActivity {
                 createRoom(roomCode, playerName);
             }
         });
-        deleteAllRoomsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                apiService.deleteAllRooms().enqueue(new Callback<Void>() {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        Log.w("nice", "nice");
-                    }
-
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        Log.w("bad", "bad");
-                    }
-                });
-            }
-        });
-        deleteAllMessagesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                apiService.deleteAllMessages().enqueue(new Callback<Void>() {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        Log.w("nice", "nice");
-                    }
-
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        Log.w("bad", "bad");
-                    }
-                });
-            }
-        });
+//        deleteAllRoomsButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                apiService.deleteAllRooms().enqueue(new Callback<Void>() {
+//                    @Override
+//                    public void onResponse(Call<Void> call, Response<Void> response) {
+//                        Log.w("nice", "nice");
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<Void> call, Throwable t) {
+//                        Log.w("bad", "bad");
+//                    }
+//                });
+//            }
+//        });
+//        deleteAllMessagesButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                apiService.deleteAllMessages().enqueue(new Callback<Void>() {
+//                    @Override
+//                    public void onResponse(Call<Void> call, Response<Void> response) {
+//                        Log.w("nice", "nice");
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<Void> call, Throwable t) {
+//                        Log.w("bad", "bad");
+//                    }
+//                });
+//            }
+//        });
     }
     private void createRoom(final String roomCode, final String playerName) {
         Room room = new Room();

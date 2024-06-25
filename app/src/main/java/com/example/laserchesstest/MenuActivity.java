@@ -41,7 +41,7 @@ public class MenuActivity extends AppCompatActivity {
         playButton = findViewById(R.id.button_play);
         rulesButton = findViewById(R.id.button_rules);
         quitButton = findViewById(R.id.button_quit);
-        onlineButton = findViewById(R.id.button_online);
+//        onlineButton = findViewById(R.id.button_online);
         inflater = getLayoutInflater();
 
         RoomDatabase.Callback myCallBack = new RoomDatabase.Callback() {
@@ -65,13 +65,13 @@ public class MenuActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        onlineButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                intent = new Intent(MenuActivity.this, LobbyActivity.class);
-                startActivity(intent);
-            }
-        });
+//        onlineButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                intent = new Intent(MenuActivity.this, LobbyActivity.class);
+//                startActivity(intent);
+//            }
+//        });
         quitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

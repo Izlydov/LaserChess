@@ -25,9 +25,6 @@ public class RoomActivity extends AppCompatActivity {
     ApiService apiService;
     Room currentRoom;
     Button deleteRoomButton;
-    private Button sendButton;
-    private EditText messageInput;
-    private TextView messagesView;
     private boolean isActive;
     private boolean gameStarted = false;
     private boolean isBlue;
@@ -46,25 +43,10 @@ public class RoomActivity extends AppCompatActivity {
         playerName = getIntent().getStringExtra("playerName");
         isBlue = getIntent().getBooleanExtra("isFirst", false);
 
-        sendButton = findViewById(R.id.button_send);
-        messageInput = findViewById(R.id.edit_message);
-        messagesView = findViewById(R.id.text_messages);
-
         roomCodeView.setText("Код комнаты: " + roomCode);
 
         apiService = ApiClient.getApiService();
         fetchRoomDetails();
-        fetchMessages();
-
-
-        sendButton.setOnClickListener(v -> {
-            String content = messageInput.getText().toString();
-            Message message = new Message();
-            message.setRoom(currentRoom);
-            message.setSender(playerName);
-            message.setContent(content);
-            sendMessage(message);
-        });
 
         deleteRoomButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +74,6 @@ public class RoomActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Message> call, Response<Message> response) {
                 if (response.isSuccessful()) {
-                    fetchMessages();
                 } else {
                     Log.e("RoomActivity", "Error sending message: " + response.message());
                 }
@@ -105,27 +86,6 @@ public class RoomActivity extends AppCompatActivity {
         });
     }
 
-    private void fetchMessages() {
-        apiService.getMessagesByRoomCode(roomCode).enqueue(new Callback<List<Message>>() {
-            @Override
-            public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    StringBuilder messagesText = new StringBuilder();
-                    for (Message message : response.body()) {
-                        messagesText.append(message.getSender()).append(": ").append(message.getContent()).append("\n");
-                    }
-                    messagesView.setText(messagesText.toString());
-                } else {
-                    Log.e("RoomActivity", "Error fetching messages: " + response.message());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Message>> call, Throwable t) {
-                Log.e("RoomActivity", "Error fetching messages", t);
-            }
-        });
-    }
 
     private void fetchRoomDetails() {
         apiService.getRoomByCode(roomCode).enqueue(new Callback<Room>() {
