@@ -182,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
     private String playerName;
     private Long lastProcessedMessageId;
     private String LaserWayJson;
+    private String finalResult = "Победа";
 
     private void initializeBoard() {
 
@@ -1113,13 +1114,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void gameover() {
-        String result;
-        if(FirstPlayerTurn){
-            result = "Победа красных";
-        } else {
-            result = "Победа синих";
-        }
-        showGameOverAlert(this, "Игра окончена", result);
+        showGameOverAlert(this, "Игра окончена", finalResult);
     }
 
     public void undo(){
@@ -1232,6 +1227,11 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case KING_KILL:
+                if(Board[coordinates.getX()][coordinates.getY()].getPiece().isWhite()){
+                    finalResult = "Победа красных";
+                } else {
+                    finalResult = "Победа синих";
+                }
                 Board[coordinates.getX()][coordinates.getY()].setPiece(null);
                 drawLaserWay();
                 gameover();
