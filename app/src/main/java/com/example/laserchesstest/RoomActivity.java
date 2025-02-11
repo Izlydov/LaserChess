@@ -118,7 +118,7 @@ public class RoomActivity extends AppCompatActivity {
         new Thread(() -> {
             while (isActive && currentRoom.getPlayer2() == null) {
                 try {
-                    Thread.sleep(5000); // wait for 5 seconds
+                    Thread.sleep(5000); // wait for 5 seconds FIXME()
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -134,16 +134,25 @@ public class RoomActivity extends AppCompatActivity {
                                     startGame();
                                 });
                             }
+                        } else {
+                            stopWaiting();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Room> call, Throwable t) {
                         Log.e("RoomActivity", "Error fetching room details", t);
+                        runOnUiThread(() -> {
+                            Toast.makeText(RoomActivity.this, "Ошибка подключения", Toast.LENGTH_LONG).show();
+                        });
+                        stopWaiting();
                     }
                 });
             }
         }).start();
+    }
+    private void stopWaiting() {
+        isActive = false;
     }
 
 

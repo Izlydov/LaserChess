@@ -79,5 +79,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/button_delete_messages"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#E91E63"
+        android:text="Удалить все сообщения"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.414"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.486" />
+
+    <Button
+        android:id="@+id/button_delete_rooms"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#E91E63"
+        android:text="Удалить все комнаты"
+        app:layout_constraintBottom_toTopOf="@+id/button_delete_messages"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.414"
+        app:layout_constraintStart_toStartOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

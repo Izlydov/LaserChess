@@ -41,7 +41,7 @@ public class MenuActivity extends AppCompatActivity {
         playButton = findViewById(R.id.button_play);
         rulesButton = findViewById(R.id.button_rules);
         quitButton = findViewById(R.id.button_quit);
-//        onlineButton = findViewById(R.id.button_online);
+        onlineButton = findViewById(R.id.button_online);
         inflater = getLayoutInflater();
 
         RoomDatabase.Callback myCallBack = new RoomDatabase.Callback() {
@@ -65,13 +65,14 @@ public class MenuActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-//        onlineButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
+        onlineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLobbyAlert(MenuActivity.this, inflater, "Серверная часть находится в доработке", "Продолжение следует...");
 //                intent = new Intent(MenuActivity.this, LobbyActivity.class);
 //                startActivity(intent);
-//            }
-//        });
+            }
+        });
         quitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,6 +112,17 @@ public class MenuActivity extends AppCompatActivity {
                 .setNeutralButton("Фигуры", new DialogInterface.OnClickListener(){
                     public void onClick(DialogInterface dialog, int which) {
                         showAlertPieces(context, inflater, "Фигуры");
+                    }
+                })
+                .show();
+    }
+    public void showLobbyAlert(Context context, LayoutInflater inflater, String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
                     }
                 })
                 .show();

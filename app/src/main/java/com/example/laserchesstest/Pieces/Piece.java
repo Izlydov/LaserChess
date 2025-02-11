@@ -12,19 +12,17 @@ public class Piece implements Cloneable{
 
     private ArrayList<Object> stringList;
     @SerializedName("piece_name")
-    private String name; // имя нужно для определения типа фигуры после сохранения
+    private String name;
 
     @NonNull
     @Override
     public Piece clone() {
         try {
-            // Сначала копируем примитивные типы или неизменяемые объекты
             Piece cloned = (Piece) super.clone();
-            // Затем копируем изменяемые объекты
-            cloned.stringList = new ArrayList<>(stringList); // Глубокое копирование списка строк
+            cloned.stringList = new ArrayList<>(stringList);
             return cloned;
         } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e); // Обработка исключения CloneNotSupportedException
+            throw new RuntimeException(e);
         }
     }
 
